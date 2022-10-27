@@ -1,0 +1,13 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
+    <ui:VisualElement>
+        <ui:VisualElement style="flex-direction: row;">
+            <ui:Button text="Generate" display-tooltip-when-elided="true" name="Generate_btn" />
+            <ui:TextField picking-mode="Ignore" label="Prompt" binding-path="prompt" style="flex-grow: 1;" />
+        </ui:VisualElement>
+        <uie:PropertyField binding-path="steps" />
+    </ui:VisualElement>
+    <ui:ScrollView style="flex-grow: 1;">
+        <ui:VisualElement name="Image" style="width: 256px; height: 256px;" />
+    </ui:ScrollView>
+    <ui:Label display-tooltip-when-elided="true" binding-path="message" />
+</ui:UXML>
