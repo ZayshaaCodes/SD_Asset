@@ -1,13 +1,28 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
+    <ui:VisualElement style="flex-direction: row;">
+        <ui:Button text="Generate" display-tooltip-when-elided="true" name="generate_btn" style="flex-grow: 1;" />
+        <ui:Button text="Mask Editor" display-tooltip-when-elided="true" name="maskeditor_btn" style="flex-grow: 1;" />
+        <ui:Button display-tooltip-when-elided="true" style="flex-grow: 1;" />
+    </ui:VisualElement>
     <ui:VisualElement>
         <ui:VisualElement style="flex-direction: row;">
-            <ui:Button text="Generate" display-tooltip-when-elided="true" name="Generate_btn" />
-            <ui:TextField picking-mode="Ignore" label="Prompt" binding-path="prompt" style="flex-grow: 1;" />
+            <ui:DropdownField label="sampler" index="-1" name="samplers_dropdown" binding-path="selectedSampler" style="flex-grow: 1; flex-basis: 1px;" />
+            <ui:DropdownField label="AI Model" index="-1" name="model_dropdown" style="height: 19px; flex-grow: 2; flex-basis: 1px;" />
         </ui:VisualElement>
-        <uie:PropertyField binding-path="steps" />
+        <uie:PropertyField binding-path="steps" name="steps" />
+        <uie:PropertyField binding-path="denoise" name="denoise" />
+        <uie:PropertyField binding-path="cfgScale" name="cfgScale" />
+        <uie:PropertyField binding-path="prompt" name="prompt" />
+        <uie:PropertyField binding-path="negprompt" name="negPrompt" />
+        <uie:PropertyField binding-path="seed" name="SeedField" />
+        <ui:VisualElement name="size" style="flex-direction: row;">
+            <uie:PropertyField binding-path="height" name="height" style="flex-grow: 1;" />
+            <uie:PropertyField binding-path="width" name="width" style="flex-grow: 1;" />
+        </ui:VisualElement>
+        <uie:PropertyField binding-path="batchCount" name="batchCount" />
+        <uie:PropertyField binding-path="batchSize" name="batchSize" />
+        <ui:ProgressBar title="Generating" binding-path="progress" high-value="1" />
     </ui:VisualElement>
-    <ui:ScrollView style="flex-grow: 1;">
-        <ui:VisualElement name="Image" style="width: 256px; height: 256px;" />
-    </ui:ScrollView>
-    <ui:Label display-tooltip-when-elided="true" binding-path="message" />
+    <ui:ScrollView name="out_container" style="flex-grow: 1;" />
+    <ui:Label display-tooltip-when-elided="true" text="messages" style="background-color: rgb(41, 41, 41);" />
 </ui:UXML>
