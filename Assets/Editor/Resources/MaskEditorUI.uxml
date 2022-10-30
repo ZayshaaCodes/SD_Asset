@@ -1,3 +1,7 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
+    <uie:Toolbar>
+        <uie:ToolbarButton text="Save" display-tooltip-when-elided="true" name="save_btn" />
+    </uie:Toolbar>
     <ui:VisualElement name="preview_img" focusable="false" style="flex-grow: 1; display: flex;" />
+    <ui:ScrollView mode="Horizontal" style="flex-direction: row;" />
 </ui:UXML>

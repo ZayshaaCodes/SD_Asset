@@ -1,17 +1,12 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using Codice.Client.BaseCommands;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Unity.EditorCoroutines.Editor;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
-using UnityEngine.Networking;
 using UnityEngine.UIElements;
 
 namespace Editor
@@ -23,26 +18,10 @@ namespace Editor
 
     public class SD_Editor : EditorWindow
     {
-        [SerializeField]               private string prompt     = "pixar character";
-        [SerializeField]               private string negprompt  = "";
-        [SerializeField, Range(1, 50)] private int    steps      = 25;
-        [SerializeField, Range(1, 10)] private int    batchCount = 1;
-        [SerializeField, Range(1, 10)] private int    batchSize  = 2;
-        [SerializeField, Range(1, 30)] private float  cfgScale   = 10;
-        [SerializeField, Range(0, 1)]  private float  denoise    = .5f;
-
-        [SerializeField] private int seed = -1;
-
         [SerializeField]                private string message;
         [SerializeField, Range(0f, 1f)] private float  progress;
 
         private MaskEditor maskEditWindow => GetWindow<MaskEditor>();
-
-        [SerializeField, RangeEx(128, 1024, 128)]
-        private int width = 512;
-
-        [SerializeField, RangeEx(128, 1024, 128)]
-        private int height = 512;
 
         private VisualElement   outContainer;
         private List<Texture2D> outputImages;
@@ -64,7 +43,8 @@ namespace Editor
             "PLMS"
         };
 
-        [SerializeField] private string selectedSampler = "Euler a";
+        [SerializeField] private string      selectedSampler = "Euler a";
+        [SerializeField] private RequestData requestData     = new();
 
         [MenuItem("SD/Window")]
         public static void LoadWindow()
@@ -73,10 +53,10 @@ namespace Editor
             window.Show();
         }
 
-        private void OnGUI()
-        {
-            // message = Event.current.mousePosition.ToString();
-        }
+        // private void OnGUI()
+        // {
+        //     // message = Event.current.mousePosition.ToString();
+        // }
 
         private void Update()
         {
@@ -84,6 +64,53 @@ namespace Editor
             {
                 Repaint();
             }
+        }
+
+        public IEnumerator Generate()
+        {
+            isRunning = true;
+            EditorCoroutineUtility.StartCoroutine(ProgressCheck(), this);
+
+            previewElement.style.display = DisplayStyle.Flex;
+
+            int w = Mathf.FloorToInt(outContainer.contentRect.width / 256);
+            
+            ClearOutputContainer();
+            yield return ApiUtils.Generate(requestData, generatedImages =>
+            {
+                VisualElement subcontainer = new() { style = { flexDirection = FlexDirection.Row } };
+                outContainer.Add(subcontainer);
+                var           c            = w;
+                foreach (var generatedImage in generatedImages)
+                {
+                    if (c-- <= 0)
+                    {
+                        c            = w;
+                        subcontainer = new() { style = { flexDirection = FlexDirection.Row } };
+                        outContainer.Add(subcontainer);
+                    }
+
+                    var newImg = new VisualElement()
+                    {
+                        style =
+                        {
+                            backgroundImage = generatedImage,
+                            width           = 256,
+                            height          = 256
+                        }
+                    };
+                    newImg.RegisterCallback<MouseDownEvent>(evt =>
+                    {
+                        maskEditWindow.SetPreview(generatedImage);
+                    });
+
+                    subcontainer.Add(newImg);
+                }
+            });
+
+            previewElement.style.display = DisplayStyle.None;
+            isRunning                    = false;
+            progress                     = 1;
         }
 
         private void CreateGUI()
@@ -94,7 +121,7 @@ namespace Editor
             root.Bind(new SerializedObject(this));
 
             previewTexture = new Texture2D(512, 512);
-            previewElement = new VisualElement() { style = { backgroundImage = previewTexture, width = 512, height = 512 } };
+            previewElement = new VisualElement() { name = "preview", style = { backgroundColor = Color.yellow, backgroundImage = previewTexture, width = 512, height = 512 } };
 
             ApiUtils.GetModels(models);
 
@@ -115,11 +142,12 @@ namespace Editor
                 samplerField.value   = samplers[0];
             }
 
-            if (root.Q<ScrollView>() is { } sv)
+            if (root.Q<ScrollView>("out_container") is { } sv)
             {
                 if (sv.Q<VisualElement>("unity-content-container") is { } outCon)
                 {
-                    outContainer = outCon;
+                    outCon.style.backgroundColor = new StyleColor(new Color(0f, 0f, 0f, 0.2f));
+                    outContainer                 = outCon;
                     outContainer.Add(previewElement);
                 }
             }
@@ -128,7 +156,7 @@ namespace Editor
             {
                 maskButton.clicked += () =>
                 {
-                    CreateWindow<MaskEditor>();
+                    maskEditWindow.Show();
                 };
             }
 
@@ -137,7 +165,6 @@ namespace Editor
             {
                 genButton.clicked += () =>
                 {
-                    Debug.Log("generate: " + prompt);
                     previewElement.style.display = DisplayStyle.Flex;
                     EditorCoroutineUtility.StartCoroutine(Generate(), this);
                 };
@@ -149,92 +176,6 @@ namespace Editor
             //     EditorCoroutineUtility.StartCoroutine(ApiUtils.ApiRequest(2), this);
             //     isRunning = false;
             // };
-        }
-
-        private IEnumerator Generate()
-        {
-            Dictionary<string, object> postData = new()
-            {
-                { "enable_hr", false },
-                { "denoising_strength", denoise },
-                { "firstphase_width", 0 },
-                { "firstphase_height", 0 },
-                { "prompt", prompt },
-                // { "styles", new List<string>() },
-                { "seed", seed },
-                { "subseed", -1 },
-                { "subseed_strength", 0 },
-                { "seed_resize_from_h", -1 },
-                { "seed_resize_from_w", -1 },
-                { "batch_size", batchCount },
-                { "n_iter", 1 },
-                { "steps", steps },
-                { "cfg_scale", cfgScale },
-                { "width", width },
-                { "height", height },
-                { "restore_faces", false },
-                { "tiling", false },
-                { "negative_prompt", negprompt },
-                { "eta", 0 },
-                { "s_churn", 0 },
-                { "s_tmax", 0 },
-                { "s_tmin", 0 },
-                { "s_noise", 1 },
-                { "sampler_index", selectedSampler }
-            };
-
-            var data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(postData, Formatting.Indented));
-
-            var request = new UnityWebRequest("http://localhost:7860/sdapi/v1/txt2img", UnityWebRequest.kHttpVerbPOST);
-
-            UploadHandlerRaw uH = new UploadHandlerRaw(data);
-            DownloadHandler  dH = new DownloadHandlerBuffer();
-            request.uploadHandler   = uH;
-            request.downloadHandler = dH;
-
-            request.useHttpContinue = false;
-            request.SetRequestHeader("Content-Type", "application/json");
-
-            isRunning = true;
-            EditorCoroutineUtility.StartCoroutine(ProgressCheck(), this);
-            yield return request.SendWebRequest();
-
-            ClearOutputContainer();
-            previewElement.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.None);
-            isRunning                    = false;
-            progress                     = 1;
-
-            if (request.result == UnityWebRequest.Result.Success)
-            {
-                // Debug.Log(dH.text);
-                var reqJson     = JObject.Parse(dH.text);
-                var imagesToken = reqJson["images"];
-                var c           = imagesToken!.Count();
-                for (int i = 0; i < c; i++)
-                {
-                    var t2d      = new Texture2D(width, height);
-                    var imageStr = imagesToken[i]!.ToString();
-
-                    var imgData = Convert.FromBase64String(imageStr);
-                    t2d.LoadImage(imgData);
-
-                    var newImg = new VisualElement()
-                    {
-                        style =
-                        {
-                            backgroundImage = t2d,
-                            width           = 256,
-                            height          = 256
-                        }
-                    };
-                    newImg.RegisterCallback<MouseDownEvent>(evt =>
-                    {
-                        maskEditWindow.SetPreview(t2d);
-                        maskEditWindow.SetPreview(t2d);
-                    });
-                    outContainer.Add(newImg);
-                }
-            }
         }
 
         private void ClearOutputContainer()
@@ -265,7 +206,14 @@ namespace Editor
                     var imgString = jo["data"]?[2]?.ToString();
                     if (imgString.Length > 500 && imgString.Substring(22, imgString.Length - 22) is { } imgData)
                     {
-                        previewTexture.LoadImage(Convert.FromBase64String(imgData));
+                        if (previewTexture == null)
+                        {
+                            Debug.Log("previewTexture is null");
+                        }
+                        else
+                        {
+                            previewTexture.LoadImage(Convert.FromBase64String(imgData));
+                        }
                     }
                 });
             }
