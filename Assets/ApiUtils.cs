@@ -22,13 +22,13 @@ public static class ApiUtils
         return Convert.ToBase64String(texture.EncodeToPNG());
     }
 
-    public static IEnumerator Generate(RequestData requestData, Action<List<Texture2D>> callback)
+    public static IEnumerator Generate(Img2ImgRequestData requestData, Action<List<Texture2D>> callback)
     {
         var images       = new List<Texture2D>();
-        var hasInitImage = requestData.init_images.Count == 0;
-        var request      = new UnityWebRequest($"http://localhost:7860/sdapi/v1/{(hasInitImage ? "txt2img" : "img2img")}", UnityWebRequest.kHttpVerbPOST);
+        var hasInitImage = requestData.init_images.Count > 0;
+        var request      = new UnityWebRequest($"http://localhost:7860/sdapi/v1/{(hasInitImage ? "img2img" : "txt2img")}", UnityWebRequest.kHttpVerbPOST);
 
-        UploadHandlerRaw uH = new UploadHandlerRaw(hasInitImage ? requestData.Txt2ImgData : requestData.Img2ImgData);
+        UploadHandlerRaw uH = new UploadHandlerRaw(((Txt2ImgRequestData)requestData).GetFieldDataBytes());
         DownloadHandler  dH = new DownloadHandlerBuffer();
 
         request.uploadHandler   = uH;
