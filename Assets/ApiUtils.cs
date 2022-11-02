@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Unity.EditorCoroutines.Editor;
@@ -22,13 +23,13 @@ public static class ApiUtils
         return Convert.ToBase64String(texture.EncodeToPNG());
     }
 
-    public static IEnumerator Generate(Img2ImgRequestData requestData, Action<List<Texture2D>> callback)
+    public static IEnumerator Generate(RequestData requestData, Action<List<SdImage>> callback)
     {
-        var images       = new List<Texture2D>();
+        var images       = new List<SdImage>();
         var hasInitImage = requestData.init_images.Count > 0;
         var request      = new UnityWebRequest($"http://localhost:7860/sdapi/v1/{(hasInitImage ? "img2img" : "txt2img")}", UnityWebRequest.kHttpVerbPOST);
 
-        UploadHandlerRaw uH = new UploadHandlerRaw(((Txt2ImgRequestData)requestData).GetFieldDataBytes());
+        UploadHandlerRaw uH = new UploadHandlerRaw(requestData.GetFieldDataBytes());
         DownloadHandler  dH = new DownloadHandlerBuffer();
 
         request.uploadHandler   = uH;
@@ -41,17 +42,23 @@ public static class ApiUtils
 
         if (request.result == UnityWebRequest.Result.Success)
         {
-            var reqJson     = JObject.Parse(dH.text);
-            var imagesToken = reqJson["images"];
+            var resJson     = JObject.Parse(dH.text);
+            var imagesToken = resJson["images"];
+            var infoToken   = resJson["info"];
+            
+            var info        = infoToken.ToString();
+            var seedmatch   = Regex.Match(info, @"\sseed: (\d+)").Groups[1];
+
             var c           = imagesToken!.Count();
             for (int i = 0; i < c; i++)
             {
                 var t2d = new Texture2D(requestData.width, requestData.height);
                 t2d.LoadImage(Convert.FromBase64String(imagesToken[i]!.ToString()));
                 t2d.Apply();
-                images.Add(t2d);
+                images.Add(new (t2d, info));
             }
 
+            uH.Dispose();
             request.Dispose();
 
             callback?.Invoke(images);

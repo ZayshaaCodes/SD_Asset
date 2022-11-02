@@ -1,6 +1,7 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
     <uie:Toolbar>
         <uie:ToolbarButton text="Save" display-tooltip-when-elided="true" name="save_btn" />
+        <uie:ToolbarButton text="Clear" display-tooltip-when-elided="true" name="clear_btn" />
         <uie:ToolbarSpacer style="flex-grow: 1;" />
         <uie:ToolbarToggle value="false" text="Edit Mask" />
         <uie:ToolbarToggle value="false" text="Hide Mask" />
@@ -8,7 +9,7 @@
         <uie:ToolbarToggle binding-path="genPreview" value="false" text="Gen Preview" />
     </uie:Toolbar>
     <ui:ScrollView style="flex-grow: 1;">
-        <ui:VisualElement name="image_layer" style="display: flex; padding-left: 49%; padding-right: 49%; padding-top: 49%; padding-bottom: 49%; width: 0; height: 0; margin-left: 1%; margin-right: 1%; margin-top: 1%; margin-bottom: 1%; position: absolute;" />
-        <ui:VisualElement name="mask_layer" style="padding-left: 49%; padding-right: 49%; padding-top: 49%; padding-bottom: 49%; width: 0; height: 0; margin-left: 1%; margin-right: 1%; margin-top: 1%; margin-bottom: 1%; position: absolute; display: none; visibility: hidden; overflow: hidden;" />
+        <ui:VisualElement name="image_layer" style="display: flex; padding-left: 50%; padding-right: 50%; padding-top: 50%; padding-bottom: 50%; width: 0; height: 0; position: absolute;" />
+        <ui:VisualElement name="mask_layer" text="clear" style="padding-left: 49%; padding-right: 49%; padding-top: 49%; padding-bottom: 49%; width: 0; height: 0; margin-left: 1%; margin-right: 1%; margin-top: 1%; margin-bottom: 1%; position: absolute; display: none; visibility: hidden; overflow: hidden;" />
     </ui:ScrollView>
 </ui:UXML>
