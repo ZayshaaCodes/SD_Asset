@@ -1,6 +1,6 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using Unity.EditorCoroutines.Editor;
 using UnityEditor;
 using UnityEditor.UIElements;
@@ -15,31 +15,26 @@ namespace Editor
         private List<SdImage> outputImages = new();
         private Texture2D     mask;
 
+        private ApiUtils.ApiConfig _config;
+
         private StableDiffusionViewport viewport = null;
 
         private bool isRunning;
 
-        [SerializeField]                private string      message;
-        [SerializeField, Range(0f, 1f)] private float       progress;
-        [SerializeField]                private string      selectedSampler = "Euler a";
-        [SerializeField]                public  RequestData requestData;
+        [SerializeField]                private string message;
+        [SerializeField, Range(0f, 1f)] private float  progress;
+        [SerializeField]                private string selectedSampler = "Euler a";
+        [SerializeField]                private string genButtonText   = "Generate";
 
-        [SerializeField] private List<string> models = new();
+        [SerializeField] public RequestData requestData;
 
-        [SerializeField] private List<string> samplers = new()
-        {
-            "Euler a",
-            "Euler",
-            "LMS",
-            "Heun",
-            "DPM adaptive",
-            "DDIM",
-            "PLMS"
-        };
+        [SerializeField] private List<string> models   = new();
+        [SerializeField] private List<string> samplers = new();
 
-        [SerializeField] private VisualTreeAsset SDEditorUiAsset;
-        [SerializeField] private VisualTreeAsset PreviewImageUiAsset;
+        [SerializeField] private VisualTreeAsset sdEditorUiAsset;
+        [SerializeField] private VisualTreeAsset previewImageUiAsset;
         [SerializeField] private StyleSheet      style;
+        private                  ProgressBar     _progressBar;
 
         [MenuItem("SD/Window")]
         public static void LoadWindow()
@@ -54,18 +49,29 @@ namespace Editor
                 viewport = GetWindow<StableDiffusionViewport>();
             }
 
-            var root = rootVisualElement;
-            SDEditorUiAsset.CloneTree(root);
-            root.Bind(new(this));
-            root.styleSheets.Add(style);
+            sdEditorUiAsset.CloneTree(rootVisualElement);
+            rootVisualElement.Bind(new(this));
+            rootVisualElement.styleSheets.Add(style);
 
+            EditorCoroutineUtility.StartCoroutineOwnerless(InitializeGUI());
+        }
+
+        private IEnumerator InitializeGUI()
+        {
+            var root = rootVisualElement;
             outContainer = root.Q<VisualElement>("out_container");
 
             ApiUtils.GetModels(models);
+            ApiUtils.GetSamplers(samplers);
+            yield return ApiUtils.GetConfig(config =>
+            {
+                _config = config;
+            });
+
             if (root.Q<DropdownField>("model_dropdown") is { } dropdownField)
             {
                 dropdownField.choices = models;
-                EditorCoroutineUtility.StartCoroutine(ApiUtils.GetCurModel(s => dropdownField.value = s), this);
+                dropdownField.value   = _config.sd_model_checkpoint;
 
                 dropdownField.RegisterValueChangedCallback(evt =>
                 {
@@ -76,7 +82,6 @@ namespace Editor
             if (root.Q<DropdownField>("samplers_dropdown") is { } samplerField)
             {
                 samplerField.choices = samplers;
-                samplerField.value   = samplers[0];
             }
 
 
@@ -88,29 +93,18 @@ namespace Editor
                 };
             }
 
+            _progressBar = root.Q<ProgressBar>("progress-bar");
+
             if (root.Q<Button>("generate_btn") is { } genButton)
             {
                 genButton.clicked += () =>
                 {
-                    EditorCoroutineUtility.StartCoroutine(Generate(), this);
+                    if (isRunning)
+                        ApiUtils.Interrupt();
+                    else
+                        EditorCoroutineUtility.StartCoroutine(Generate(), this);
                 };
             }
-
-
-            // if (root.Q<Button>("test-button") is { } testbtn)
-            // {
-            //     testbtn.clicked += () =>
-            //     {
-            //         AddPreviewImage();
-            //     };
-            // }
-
-            // var cancelButton = root.Q<Button>("Interupt_btn");
-            // cancelButton.clicked += () =>
-            // {
-            //     EditorCoroutineUtility.StartCoroutine(ApiUtils.ApiRequest(2), this);
-            //     isRunning = false;
-            // };
         }
 
         private void LayoutPreviews()
@@ -127,10 +121,12 @@ namespace Editor
                     outContainer.Add(rowElement);
                 }
 
-                var img = PreviewImageUiAsset.CloneTree()[0];
+                var img = previewImageUiAsset.CloneTree()[0];
 
                 var sdImage = outputImages[i];
                 img.style.backgroundImage = sdImage.image;
+                img.style.width           = sdImage.image.width / 2;
+                img.style.height          = sdImage.image.height / 2;
                 img.userData              = sdImage;
 
                 img.EnableInClassList("img-icon--sel", false);
@@ -171,10 +167,13 @@ namespace Editor
                 }
             }
 
-            isRunning = true;
+            isRunning     = true;
+            genButtonText = "Interrupt";
+            Repaint();
 
-            EditorCoroutineUtility.StartCoroutine(ProgressCheck(), this);
-
+            Texture2D tempTexture             = null;
+            if (viewport != null) tempTexture = viewport.TempShowTextureStart(requestData.height / (float)requestData.width);
+            EditorCoroutineUtility.StartCoroutine(ProgressCheck(tempTexture), this);
 
             yield return ApiUtils.Generate(requestData, generatedImages =>
             {
@@ -195,37 +194,40 @@ namespace Editor
                 LayoutPreviews();
             });
 
-            isRunning = false;
-            progress  = 1;
+            isRunning     = false;
+            genButtonText = "Generate";
+            progress      = 1;
         }
 
-        private IEnumerator ProgressCheck()
+        private IEnumerator ProgressCheck(Texture2D previewTexture = null)
         {
+            string currentImage = "";
             while (isRunning)
             {
-                yield return new EditorWaitForSeconds(.125f);
+                // yield return new EditorWaitForSeconds(.5f);
 
-                yield return ApiUtils.ApiRequest(4, null, (s, JObject) =>
+
+                yield return ApiUtils.CheckProgress((progData) =>
                 {
-                    var match = Regex.Match(s, @";width:-?([\d\.]+)%;");
-                    if (float.TryParse(match.Groups[1].ToString(), out float val))
+                    progress = progData.percent;
+
+                    if (_progressBar != null)
                     {
-                        progress = val / 100;
+                        _progressBar.title = progData.Info;
+                    }
+                    
+                    if (progData.image == currentImage) return;
+                    currentImage = progData.image;
+                    if (previewTexture != null)
+                    {
+                        previewTexture.LoadImage(Convert.FromBase64String(progData.image));
                     }
                 });
-                //
-                // if (editwindow != null && editwindow.genPreview)
-                // {
-                //     yield return ApiUtils.ApiRequest(3, null, (s, jo) =>
-                //     {
-                //         var imgString = jo["data"]?[2]?.ToString();
-                //         if (imgString.Length > 500 && imgString.Substring(22, imgString.Length - 22) is { } imgData)
-                //         {
-                //             previewTexture.LoadImage(Convert.FromBase64String(imgData));
-                //         }
-                //     });
-                // }
             }
+
+            yield return null;
+
+            viewport.TempShowTextureEnd();
         }
     }
 }

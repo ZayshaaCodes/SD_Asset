@@ -1,18 +1,21 @@
 ﻿using UnityEngine;
 
-namespace Editor
+public enum LayerType
 {
-    [System.Serializable]
-    public class ImageLayer
-    {
-        public string    name;
-        public Texture2D image;
-        public 
+    Base, Mask, Paint
+}
 
-            public ImageLayer(string name, Texture2D image)
-        {
-            this.name  = name;
-            this.image = image;
-        }
+[System.Serializable]
+public class ImageLayer
+{
+    public string    name;
+    public Texture2D image;
+    public LayerType type;
+
+    public ImageLayer(string name, Texture2D image, LayerType type = LayerType.Paint)
+    {
+        this.name  = name;
+        this.image = image;
+        this.type  = type;
     }
 }

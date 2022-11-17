@@ -15,17 +15,20 @@
                 <uie:PropertyField binding-path="requestData.width" name="width" style="flex-grow: 1;" />
                 <uie:PropertyField binding-path="requestData.height" name="height" style="flex-grow: 1;" />
             </ui:VisualElement>
+            <uie:PropertyField binding-path="requestData.resize_mode" name="resizeMode" />
             <uie:PropertyField binding-path="requestData.steps" name="steps" />
             <uie:PropertyField binding-path="requestData.cfg_scale" name="cfgScale" label="Gfg Scale" />
+            <ui:VisualElement style="flex-direction: row;">
+                <uie:PropertyField binding-path="requestData.restore_faces" />
+            </ui:VisualElement>
             <uie:PropertyField binding-path="requestData.prompt" name="prompt" />
             <uie:PropertyField binding-path="requestData.negative_prompt" name="negPrompt" label="Negative Prompt" />
             <uie:PropertyField binding-path="requestData.denoising_strength" name="denoise" label="Denoising" />
             <uie:PropertyField binding-path="requestData.init_images" name="inputimages" label="Input Images" />
-            <ui:ProgressBar title="Generating" binding-path="progress" high-value="1" />
+            <ui:ProgressBar binding-path="progress" high-value="1" name="progress-bar" />
             <ui:VisualElement style="flex-direction: row;">
-                <ui:Button text="Generate" display-tooltip-when-elided="true" name="generate_btn" style="flex-grow: 1;" />
+                <ui:Button text="Generate" display-tooltip-when-elided="true" name="generate_btn" binding-path="genButtonText" style="flex-grow: 1;" />
                 <ui:Button text="Mask Editor" display-tooltip-when-elided="true" name="maskeditor_btn" style="flex-grow: 1;" />
-                <ui:Button display-tooltip-when-elided="true" text="test" name="test-button" style="flex-grow: 1;" />
             </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>

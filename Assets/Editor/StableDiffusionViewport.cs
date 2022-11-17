@@ -9,10 +9,10 @@ namespace Editor
     public class StableDiffusionViewport : EditorWindow
     {
         private StableDiffusionEditor _editor;
-        public  SdImage   sdImage;
-        public  Texture2D mask;
+        public  SdImage               sdImage;
+        public  Texture2D             mask;
 
-        [SerializeField] private string message     = "Test";
+        [SerializeField] private string message = "Test";
 
         private VisualElement maskLayer;
         private VisualElement imageLayer;
@@ -20,33 +20,41 @@ namespace Editor
         private bool drawing     = false;
         private bool outOfBounds = false;
 
-        private                  bool            tempShowEnabled = false;
-        
+        private bool _tempShowEnabled = false;
+
         [SerializeField] private VisualTreeAsset vta;
 
-        public void TempShowTextureStart(Texture2D tex, float aspect)
+        public void SetViewAspect(float aspect)
         {
-            
-            maskLayer.visible       = false;
-            tempShowEnabled         = true;
-            imageLayer.style.backgroundImage = tex;
             imageLayer.style.paddingBottom = Length.Percent(50 + (aspect - 1) * 100);
+            maskLayer.style.paddingBottom  = Length.Percent(50 + (aspect - 1) * 100);
+        }
+
+        public Texture2D TempShowTextureStart(float aspect)
+        {
+            maskLayer.visible = false;
+            _tempShowEnabled  = true;
+            var temp = new Texture2D(512, 512);
+            imageLayer.style.backgroundImage = temp;
+            SetViewAspect(aspect);
             Repaint();
+            return temp;
         }
 
         public void TempShowTextureEnd()
         {
             maskLayer.visible = true;
-            tempShowEnabled   = false;
-            if (sdImage != null)
-            {
-                imageLayer.style.backgroundImage = sdImage?.image;
-            }
+            _tempShowEnabled  = false;
+            
+            imageLayer.style.backgroundImage = sdImage?.image;
+
+            if (sdImage?.image == null) return;
+            SetViewAspect(sdImage.image.height / (float)sdImage.image.width);
         }
 
         private void Update()
         {
-            if (tempShowEnabled)
+            if (_tempShowEnabled)
             {
                 Repaint();
             }
@@ -54,13 +62,12 @@ namespace Editor
 
         private void CreateGUI()
         {
-            
             if (vta == null) return;
 
             _editor = GetWindow<StableDiffusionEditor>();
 
             mask = new Texture2D(512, 512);
-            
+
             var root = rootVisualElement;
             vta.CloneTree(root);
             root.Bind(new SerializedObject(this));
@@ -80,7 +87,7 @@ namespace Editor
                     AssetDatabase.Refresh();
                 };
             }
-            
+
             if (root.Q<Button>("clear_btn") is { } clear)
             {
                 clear.clicked += () =>
@@ -94,13 +101,14 @@ namespace Editor
 
         private void ClearImage()
         {
-            sdImage       = new SdImage(null,"");
+            sdImage = new SdImage(null, "");
             _editor.requestData.init_images.Clear();
-            imageLayer.style.backgroundImage = new ();
+            imageLayer.style.backgroundImage = new();
         }
 
         public void SetImage(SdImage sdImage)
         {
+            SetViewAspect(sdImage.image.height/ (float)sdImage.image.width);
             this.sdImage                     = sdImage;
             imageLayer.style.backgroundImage = sdImage.image;
             Repaint();

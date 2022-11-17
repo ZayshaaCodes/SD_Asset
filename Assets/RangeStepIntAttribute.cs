@@ -21,30 +21,24 @@ public sealed class RangeStepIntAttribute : PropertyAttribute
 }
 
 [CustomPropertyDrawer(typeof(RangeStepIntAttribute))]
-internal sealed class RangeExDrawer : PropertyDrawer
+internal sealed class RangeStepIntDrawer : PropertyDrawer
 {
     public override VisualElement CreatePropertyGUI(SerializedProperty property)
     {
-        var att = attribute as RangeExAttribute;
+        var att = attribute as RangeStepIntAttribute;
 
-        BindableElement slider = null;
-        switch (property.propertyType)
-        {
-            case SerializedPropertyType.Integer:
-                slider = new SliderInt( fieldInfo.HumanName() , att.min, att.max);
-                break;
-            case SerializedPropertyType.Float:
-                slider = new SliderInt( fieldInfo.HumanName() , att.min, att.max);
-
-                break;
-        }
+        SliderInt slider = new SliderInt(fieldInfo.HumanName(), att.min, att.max);
         slider.showInputField = true;
-        slider.BindProperty(property);
-        slider.RegisterValueChangedCallback(evt =>
-        {
-            slider.SetValueWithoutNotify(Mathf.RoundToInt(evt.newValue / (float)att.step) * att.step);
-        });
         
+        slider.BindProperty(property);
+        slider.RegisterValueChangedCallback(
+            evt =>
+            {
+                var roundedVal = Mathf.RoundToInt(evt.newValue / (float)att.step) * att.step;
+                slider.SetValueWithoutNotify(roundedVal);
+                property.SetUnderlyingValue(roundedVal);
+            });
+
         return slider;
     }
 }
