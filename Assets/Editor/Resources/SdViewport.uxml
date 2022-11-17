@@ -1,12 +1,8 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
     <uie:Toolbar>
-        <uie:ToolbarButton text="Save" display-tooltip-when-elided="true" name="save_btn" />
-        <uie:ToolbarButton text="Clear" display-tooltip-when-elided="true" name="clear_btn" />
+        <uie:ToolbarButton text="Save" display-tooltip-when-elided="true" name="save_btn" style="width: 50px; -unity-text-align: middle-center;" />
+        <uie:ToolbarButton text="Clear" display-tooltip-when-elided="true" name="clear_btn" style="width: 50px; -unity-text-align: middle-center;" />
         <uie:ToolbarSpacer style="flex-grow: 1;" />
-        <uie:ToolbarToggle value="false" text="Edit Mask" />
-        <uie:ToolbarToggle value="false" text="Hide Mask" />
-        <uie:ToolbarToggle value="false" text="Img2Img Mode" />
-        <uie:ToolbarToggle binding-path="genPreview" value="false" text="Gen Preview" />
     </uie:Toolbar>
     <ui:ScrollView style="flex-grow: 1;">
         <ui:VisualElement name="image_layer" style="display: flex; padding-left: 50%; padding-right: 50%; padding-top: 50%; padding-bottom: 50%; width: 0; height: 0; position: absolute;" />

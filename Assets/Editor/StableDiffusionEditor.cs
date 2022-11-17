@@ -117,7 +117,7 @@ namespace Editor
         {
             outContainer.Clear();
 
-            var           colCount   = Mathf.FloorToInt(outContainer.contentRect.width / 128);
+            var           colCount   = Mathf.FloorToInt(outContainer.contentRect.width / 256);
             VisualElement rowElement = null;
             for (int i = 0; i < outputImages.Count; i++)
             {
@@ -175,7 +175,6 @@ namespace Editor
 
             EditorCoroutineUtility.StartCoroutine(ProgressCheck(), this);
 
-            int columns = Mathf.FloorToInt(outContainer.contentRect.width / 256);
 
             yield return ApiUtils.Generate(requestData, generatedImages =>
             {
