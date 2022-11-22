@@ -5,9 +5,9 @@ MonoImporter:
   serializedVersion: 2
   defaultReferences:
   - m_ViewDataDictionary: {instanceID: 0}
-  - SDEditorUiAsset: {fileID: 9197481963319205126, guid: 7b1fdfd25c92e4f43b0559fe0f0d1b41,
+  - sdEditorUiAsset: {fileID: 9197481963319205126, guid: 7b1fdfd25c92e4f43b0559fe0f0d1b41,
       type: 3}
-  - PreviewImageUiAsset: {fileID: 9197481963319205126, guid: 2e34a8184bcbcd549b34403694e97528,
+  - previewImageUiAsset: {fileID: 9197481963319205126, guid: 2e34a8184bcbcd549b34403694e97528,
       type: 3}
   - style: {fileID: 7433441132597879392, guid: ada999af30a3c1d4399eba4bfadd5e87, type: 3}
   executionOrder: 0

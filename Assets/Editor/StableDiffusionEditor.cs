@@ -130,9 +130,15 @@ namespace Editor
                 img.userData              = sdImage;
 
                 img.EnableInClassList("img-icon--sel", false);
+                var i1 = i;
                 img.RegisterCallback<MouseDownEvent>(evt =>
                 {
                     SelectItem(img);
+                    if (evt.clickCount == 2)
+                    {
+                        Debug.Log($"double clicked {i1}");
+                        GetWindow<ViewportTestingEditor>()?.SetBaseImage(sdImage.image);
+                    }
 
                     if (viewport != null)
                     {
@@ -158,13 +164,16 @@ namespace Editor
 
         public IEnumerator Generate()
         {
-            if (viewport != null)
+            var paintWindow = GetWindow<ViewportTestingEditor>();
+            if (paintWindow != null)
             {
-                if (viewport.sdImage.image != null)
+                requestData.init_images.Clear();
+                if (paintWindow.BuildOutputImage() is { } outImage)
                 {
-                    requestData.init_images.Clear();
-                    requestData.init_images.Add(viewport.sdImage.image);
+                    requestData.init_images.Add(outImage);
                 }
+
+                requestData.mask = paintWindow.BuildOutputMask();
             }
 
             isRunning     = true;
@@ -204,7 +213,7 @@ namespace Editor
             string currentImage = "";
             while (isRunning)
             {
-                // yield return new EditorWaitForSeconds(.5f);
+                yield return new EditorWaitForSeconds(.5f);
 
 
                 yield return ApiUtils.CheckProgress((progData) =>
@@ -215,7 +224,7 @@ namespace Editor
                     {
                         _progressBar.title = progData.Info;
                     }
-                    
+
                     if (progData.image == currentImage) return;
                     currentImage = progData.image;
                     if (previewTexture != null)
@@ -227,7 +236,7 @@ namespace Editor
 
             yield return null;
 
-            viewport.TempShowTextureEnd();
+            if (viewport != null) viewport.TempShowTextureEnd();
         }
     }
 }

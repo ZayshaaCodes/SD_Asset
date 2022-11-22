@@ -11,3 +11,66 @@
 .visibility-toggle .unity-toggle__checkmark {
     background-image: url('project://database/Packages/com.unity.timeline/Editor/StyleSheets/Images/Icons/d_TrackMuteButtonDisabled@2x.png?fileID=2800000&guid=9c706019afb28944eb19b500ea0da38c&type=3#d_TrackMuteButtonDisabled@2x');
 }
+
+.unity-list-view__reorderable-handle {
+    display: none;
+    visibility: visible;
+    overflow: visible;
+    opacity: 1;
+}
+
+.unity-list-view__reorderable-item__container {
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.img-icon {
+    margin-left: 1px;
+    margin-right: 1px;
+    margin-top: 1px;
+    margin-bottom: 1px;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(0, 0, 0, 255);
+    border-right-color: rgba(0, 0, 0, 255);
+    border-top-color: rgba(0, 0, 0, 255);
+    border-bottom-color: rgba(0, 0, 0, 255);
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    width: 256px;
+    height: 256px;
+}
+
+.img-icon--sel {
+    margin-left: 1px;
+    margin-right: 1px;
+    margin-top: 1px;
+    margin-bottom: 1px;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgb(0, 121, 255);
+    border-right-color: rgb(0, 121, 255);
+    border-top-color: rgb(0, 121, 255);
+    border-bottom-color: rgb(0, 121, 255);
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+
+.unity-object-field-display__icon {
+    max-width: 64px;
+    max-height: 64px;
+}
+
+.unity-base-field__label {
+    min-width: 80px;
+}

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -16,6 +15,11 @@ public static class ApiUtils
     public static string apuUri  = "http://localhost:7860/sdapi/v1/";
     public static string funcUri = "http://localhost:7860/run/predict/";
 
+    public static string Tob64String(this Texture2D texture)
+    {
+        if (texture == null) return null;
+        return Convert.ToBase64String(texture.EncodeToPNG());
+    }
 
     public static IEnumerator Generate(RequestData requestData, Action<List<SdImage>> callback)
     {

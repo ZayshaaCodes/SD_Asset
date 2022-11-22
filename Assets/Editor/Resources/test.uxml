@@ -1,23 +1,30 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
     <Style src="project://database/Assets/Editor/Resources/EditorStyles.uss?fileID=7433441132597879392&amp;guid=ada999af30a3c1d4399eba4bfadd5e87&amp;type=3#EditorStyles" />
-    <uie:PropertyField binding-path="brushCurve" name="curve" />
-    <uie:PropertyField binding-path="drawRad" />
-    <uie:PropertyField binding-path="drawColor" name="color" />
-    <uie:PropertyField binding-path="zoom" name="zoomSlider" />
-    <ui:VisualElement style="flex-grow: 1; flex-direction: row;">
-        <ui:VisualElement name="board" focusable="true" style="flex-grow: 1; overflow: hidden; background-color: rgba(10, 10, 10, 0.48); border-left-width: 2px; border-right-width: 2px; border-top-width: 2px; border-bottom-width: 2px; border-left-color: rgb(19, 19, 19); border-right-color: rgb(19, 19, 19); border-top-color: rgb(19, 19, 19); border-bottom-color: rgb(19, 19, 19); justify-content: center; align-items: center; min-height: 0;">
-            <ui:VisualElement name="bg" style="width: 512px; height: 512px; position: absolute; background-image: url(&apos;project://database/Assets/checker.png?fileID=2800000&amp;guid=0494f379bfa639446a482f4af00d35a0&amp;type=3#checker&apos;);">
-                <ui:VisualElement name="imageStack" style="width: 100%; height: 100%; position: absolute;" />
+    <ui:VisualElement style="flex-direction: row; flex-grow: 1;">
+        <ui:VisualElement style="flex-grow: 1;">
+            <ui:VisualElement name="params" style="min-height: 100px; border-bottom-width: 1px; border-bottom-color: rgb(35, 35, 35);">
+                <uie:PropertyField binding-path="drawRad" name="drawRad" />
+                <uie:PropertyField binding-path="zoom" name="zoom" />
+                <uie:PropertyField binding-path="drawColor" name="color" />
+                <uie:PropertyField binding-path="drawAlpha" name="drawAlpha" />
+                <uie:PropertyField binding-path="brushCurve" name="curve" />
             </ui:VisualElement>
-            <ui:IMGUIContainer name="handlesOverlay" style="flex-grow: 1; position: relative; width: 100%;" />
+            <ui:VisualElement name="canvas" focusable="true" style="flex-grow: 1; overflow: hidden; background-color: rgb(24, 24, 24); justify-content: center; align-items: center; min-height: 0;">
+                <ui:VisualElement name="bg" style="width: 512px; height: 512px; position: absolute; background-image: url(&apos;project://database/Assets/checker.png?fileID=2800000&amp;guid=0494f379bfa639446a482f4af00d35a0&amp;type=3#checker&apos;);">
+                    <ui:VisualElement name="imageStack" style="width: 100%; height: 100%; position: absolute;" />
+                </ui:VisualElement>
+                <ui:IMGUIContainer name="handlesOverlay" style="flex-grow: 1; position: relative; width: 100%;" />
+            </ui:VisualElement>
         </ui:VisualElement>
-        <ui:VisualElement>
+        <ui:VisualElement name="layers" style="border-left-width: 1px; border-left-color: rgb(35, 35, 35);">
             <uie:Toolbar>
-                <uie:ToolbarButton text="+ mask" display-tooltip-when-elided="true" />
-                <uie:ToolbarButton text="+ paint" display-tooltip-when-elided="true" />
+                <uie:ToolbarButton text="+ mask" display-tooltip-when-elided="true" name="addMaskButton" />
+                <uie:ToolbarButton text="+ paint" display-tooltip-when-elided="true" name="addPaintButton" />
             </uie:Toolbar>
-            <ui:ListView focusable="true" binding-path="imageLayers" name="layersList" virtualization-method="DynamicHeight" show-bound-collection-size="false" selection-type="Single" reorderable="true" horizontal-scrolling="false" reorder-mode="Animated" style="min-width: 100px; flex-direction: column-reverse; flex-grow: 1; justify-content: flex-end; align-items: stretch;" />
+            <ui:ListView focusable="true" binding-path="imageLayers" name="layersList" virtualization-method="DynamicHeight" show-bound-collection-size="false" selection-type="Single" reorderable="true" horizontal-scrolling="false" style="min-width: 100px; flex-direction: column-reverse; flex-grow: 1; justify-content: flex-end; align-items: stretch;" />
+            <ui:Button text="send" display-tooltip-when-elided="true" name="sendButton" style="font-size: 24px; -unity-font-style: bold;" />
+            <ui:Toggle label="Send on generate" binding-path="autoSend" />
         </ui:VisualElement>
     </ui:VisualElement>
-    <ui:Label display-tooltip-when-elided="true" binding-path="message" style="background-color: rgb(34, 34, 34);" />
+    <ui:Label display-tooltip-when-elided="true" binding-path="message" name="statusbar" style="background-color: rgb(34, 34, 34); border-top-width: 1px; border-top-color: rgb(35, 35, 35);" />
 </ui:UXML>

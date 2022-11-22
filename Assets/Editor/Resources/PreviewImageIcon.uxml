@@ -1,4 +1,4 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
     <Style src="project://database/Assets/Editor/Resources/EditorStyles.uss?fileID=7433441132597879392&amp;guid=ada999af30a3c1d4399eba4bfadd5e87&amp;type=3#EditorStyles" />
-    <ui:VisualElement name="image-icon" focusable="false" class="img-icon img-icon--sel" />
+    <ui:VisualElement name="image-icon" focusable="false" class="img-icon--sel img-icon" style="width: 128px; height: 128px;" />
 </ui:UXML>

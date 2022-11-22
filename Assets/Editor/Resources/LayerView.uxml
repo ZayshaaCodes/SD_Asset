@@ -1,13 +1,19 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
     <Style src="project://database/Assets/Editor/Resources/EditorStyles.uss?fileID=7433441132597879392&amp;guid=ada999af30a3c1d4399eba4bfadd5e87&amp;type=3#EditorStyles" />
-    <ui:VisualElement name="layer" style="flex-direction: row; border-left-color: rgb(0, 0, 0); border-right-color: rgb(0, 0, 0); border-top-color: rgb(0, 0, 0); border-bottom-color: rgb(0, 0, 0); border-bottom-width: 1px;">
+    <ui:VisualElement name="layer" style="flex-direction: row; border-bottom-width: 1px; border-bottom-color: rgb(35, 35, 35);">
         <ui:VisualElement name="icons" style="justify-content: center;">
-            <ui:Toggle name="enabledToggle" value="true" />
+            <ui:Toggle name="enabledToggle" binding-path="active" />
             <ui:Toggle name="visToggle" value="true" class="visibility-toggle" />
         </ui:VisualElement>
-        <ui:VisualElement name="preview" style="width: 50px; height: 50px; border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px; border-left-color: rgb(0, 0, 0); border-right-color: rgb(0, 0, 0); border-top-color: rgb(0, 0, 0); border-bottom-color: rgb(0, 0, 0); margin-left: 1px; margin-right: 1px; margin-top: 1px; margin-bottom: 1px;" />
-        <ui:VisualElement style="flex-grow: 1; min-width: 100px;">
-            <ui:Label tabindex="-1" text="Label" display-tooltip-when-elided="true" name="name" binding-path="name" style="font-size: 15px; -unity-text-align: middle-left; flex-grow: 1; margin-left: 5px;" />
+        <ui:VisualElement name="preview" style="width: 50px; height: 50px; border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px; border-left-color: rgb(35, 35, 35); border-right-color: rgb(35, 35, 35); border-top-color: rgb(35, 35, 35); border-bottom-color: rgb(35, 35, 35); margin-left: 1px; margin-right: 1px; margin-top: 1px; margin-bottom: 1px;" />
+        <ui:VisualElement style="flex-grow: 1; min-width: 125px; justify-content: flex-start;">
+            <ui:Label tabindex="-1" text="Label" display-tooltip-when-elided="true" name="name" binding-path="name" style="font-size: 15px; -unity-text-align: middle-left; margin-left: 5px;" />
+            <ui:Foldout>
+                <ui:FloatField value="100" binding-path="opacity" name="opacityField" style="flex-direction: row-reverse;">
+                    <ui:Label tabindex="-1" text="Opacity" display-tooltip-when-elided="true" />
+                </ui:FloatField>
+                <ui:Slider picking-mode="Ignore" value="100" high-value="100" binding-path="opacity" name="opacitySlider" />
+            </ui:Foldout>
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

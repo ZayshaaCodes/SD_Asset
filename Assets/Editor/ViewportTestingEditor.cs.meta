@@ -8,9 +8,9 @@ MonoImporter:
   - vta: {fileID: 9197481963319205126, guid: b967887b940f5d54c9900de26ad20bf5, type: 3}
   - layerItemVta: {fileID: 9197481963319205126, guid: 5d6fd8a4c075f7f458128af4fdfe8f7b,
       type: 3}
-  - defaultBase: {fileID: 2800000, guid: 1c5b6e41f3401ab4ea8c026b16252b86, type: 2}
-  - defaultPaint: {fileID: 2800000, guid: 4e1e01d1f3d733b4e8eb163af84a7b19, type: 3}
-  - defaultMask: {fileID: 2800000, guid: 1f2d4b00c813d9b4dbe8a6b01e38712d, type: 3}
+  - defaultBase: {fileID: 2800000, guid: c41141b3ca2e18c43975c857f5e73a05, type: 2}
+  - defaultPaint: {instanceID: 0}
+  - defaultMask: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

@@ -24,8 +24,8 @@ public class RequestData
     public                List<Texture2D> init_images = new();
     public                Texture2D       mask        = null;
 
-    public                           int             inpainting_fill          = 0;
-    public                           bool            inpaint_full_res         = true;
+    [Range(0,5)]public                           int             inpainting_fill          = 1;
+    public                           bool            inpaint_full_res         = false;
     public                           int             inpaint_full_res_padding = 0;
     public                           int             inpainting_mask_invert   = 0;
     [RangeStepInt(128, 1024, 128)] public int             width                    = 512;
