@@ -2,12 +2,12 @@
     <Style src="project://database/Assets/Editor/Resources/EditorStyles.uss?fileID=7433441132597879392&amp;guid=ada999af30a3c1d4399eba4bfadd5e87&amp;type=3#EditorStyles" />
     <ui:VisualElement style="flex-direction: row; flex-grow: 1;">
         <ui:VisualElement style="flex-grow: 1;">
-            <ui:VisualElement name="params" style="min-height: 100px; border-bottom-width: 1px; border-bottom-color: rgb(35, 35, 35);">
+            <ui:VisualElement name="params" style="display: flex; visibility: visible; overflow: visible; flex-direction: row;">
                 <uie:PropertyField binding-path="drawRad" name="drawRad" />
-                <uie:PropertyField binding-path="zoom" name="zoom" />
-                <uie:PropertyField binding-path="drawColor" name="color" />
+                <uie:PropertyField binding-path="brushCurve" name="curve" label="123" />
                 <uie:PropertyField binding-path="drawAlpha" name="drawAlpha" />
-                <uie:PropertyField binding-path="brushCurve" name="curve" />
+                <uie:PropertyField binding-path="fgColor" name="color" />
+                <uie:PropertyField binding-path="bgColor" name="color" />
             </ui:VisualElement>
             <ui:VisualElement name="canvas" focusable="true" style="flex-grow: 1; overflow: hidden; background-color: rgb(24, 24, 24); justify-content: center; align-items: center; min-height: 0;">
                 <ui:VisualElement name="bg" style="width: 512px; height: 512px; position: absolute; background-image: url(&apos;project://database/Assets/checker.png?fileID=2800000&amp;guid=0494f379bfa639446a482f4af00d35a0&amp;type=3#checker&apos;);">

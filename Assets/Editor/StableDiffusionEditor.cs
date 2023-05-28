@@ -15,7 +15,7 @@ namespace Editor
         private List<SdImage> outputImages = new();
         private Texture2D     mask;
 
-        private ApiUtils.ApiConfig _config;
+        private oldSdApi.ApiConfig _config;
 
         private StableDiffusionViewport viewport = null;
 
@@ -26,7 +26,7 @@ namespace Editor
         [SerializeField]                private string selectedSampler = "Euler a";
         [SerializeField]                private string genButtonText   = "Generate";
 
-        [SerializeField] public RequestData requestData;
+        [SerializeField] public oldRequestData requestData;
 
         [SerializeField] private List<string> models   = new();
         [SerializeField] private List<string> samplers = new();
@@ -61,9 +61,9 @@ namespace Editor
             var root = rootVisualElement;
             outContainer = root.Q<VisualElement>("out_container");
 
-            ApiUtils.GetModels(models);
-            ApiUtils.GetSamplers(samplers);
-            yield return ApiUtils.GetConfig(config =>
+            oldSdApi.GetModels(models);
+            oldSdApi.GetSamplers(samplers);
+            yield return oldSdApi.GetConfig(config =>
             {
                 _config = config;
             });
@@ -75,7 +75,7 @@ namespace Editor
 
                 dropdownField.RegisterValueChangedCallback(evt =>
                 {
-                    ApiUtils.SetModel(evt.newValue);
+                    oldSdApi.SetModel(evt.newValue);
                 });
             }
 
@@ -100,7 +100,7 @@ namespace Editor
                 genButton.clicked += () =>
                 {
                     if (isRunning)
-                        ApiUtils.Interrupt();
+                        oldSdApi.Interrupt();
                     else
                         EditorCoroutineUtility.StartCoroutine(Generate(), this);
                 };
@@ -184,7 +184,7 @@ namespace Editor
             if (viewport != null) tempTexture = viewport.TempShowTextureStart(requestData.height / (float)requestData.width);
             EditorCoroutineUtility.StartCoroutine(ProgressCheck(tempTexture), this);
 
-            yield return ApiUtils.Generate(requestData, generatedImages =>
+            yield return oldSdApi.Generate(requestData, generatedImages =>
             {
                 VisualElement subcontainer = new() { style = { flexDirection = FlexDirection.Row } };
 
@@ -216,22 +216,22 @@ namespace Editor
                 yield return new EditorWaitForSeconds(.5f);
 
 
-                yield return ApiUtils.CheckProgress((progData) =>
-                {
-                    progress = progData.percent;
+                // yield return oldSdApi.CheckProgress((progData) =>
+                // {
+                //     progress = progData.percent;
 
-                    if (_progressBar != null)
-                    {
-                        _progressBar.title = progData.Info;
-                    }
+                //     if (_progressBar != null)
+                //     {
+                //         _progressBar.title = progData.Info;
+                //     }
 
-                    if (progData.image == currentImage) return;
-                    currentImage = progData.image;
-                    if (previewTexture != null)
-                    {
-                        previewTexture.LoadImage(Convert.FromBase64String(progData.image));
-                    }
-                });
+                //     if (progData.image == currentImage) return;
+                //     currentImage = progData.image;
+                //     if (previewTexture != null)
+                //     {
+                //         previewTexture.LoadImage(Convert.FromBase64String(progData.image));
+                //     }
+                // });
             }
 
             yield return null;

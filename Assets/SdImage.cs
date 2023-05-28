@@ -1,14 +1,11 @@
-﻿using UnityEngine;
+﻿using Newtonsoft.Json;
+using UnityEngine;
 
 [System.Serializable]
 public class SdImage
 {
-    public Texture2D   image;
-    public string data;
-
-    public SdImage(Texture2D image, string data)
-    {
-        this.image = image;
-        this.data  = data;
-    }
+    [JsonConverter(typeof(Texture2DConverter))]
+    public Texture2D image;
+    public SdAttributes attributes;
+    public string info;
 }

@@ -9,6 +9,6 @@ public class ApiTest : MonoBehaviour
     {
         var list = new List<String>();
 
-        ApiUtils.GetModels(list);
+        // oldSdApi.GetModels(list);
     }
 }

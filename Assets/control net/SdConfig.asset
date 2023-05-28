@@ -1,0 +1,48 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03544d4a436614a4982d6481e37da930, type: 3}
+  m_Name: SdConfig
+  m_EditorClassIdentifier: 
+  base_attributes:
+    denoising_strength: 1
+    resize_mode: 0
+    mask_blur: 5
+    init_images: []
+    mask: {fileID: 0}
+    inpainting_fill: 1
+    inpaint_full_res: 0
+    inpaint_full_res_padding: 0
+    inpainting_mask_invert: 0
+    width: 512
+    height: 512
+    batch_size: 1
+    n_iter: 1
+    steps: 20
+    cfg_scale: 10
+    prompt: test
+    negative_prompt: 
+    seed: -1
+    restore_faces: 0
+    tiling: 0
+    eta: 0
+    sampler_index: Euler a
+    image_cfg_scale: 0
+    initial_noise_multiplier: 0
+    do_not_save_samples: 0
+    do_not_save_grid: 0
+    override_settings_restore_afterwards: 1
+    script_args: []
+    include_init_images: 0
+    script_name: 
+    alwayson_scripts:
+      controlNet:
+        args: []

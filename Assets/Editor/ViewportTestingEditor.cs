@@ -1,10 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using CodiceApp;
 using Editor;
 using SdEditorApi;
-using Unity.Burst;
-using Unity.Collections;
 using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEditor;
@@ -21,13 +18,14 @@ public class ViewportTestingEditor : EditorWindow
     [SerializeField, Range(.125f, 3)] private float           zoom     = 1;
     [SerializeField]                  public  bool            autoSend = true;
 
-    //brush settings
-    [SerializeField, ColorUsage(false)]  private Color32          drawColor = new(125, 0, 125, 255);
-    [SerializeField, Range(0,     1)]    private float            drawAlpha = 1;
-    [SerializeField, Range(1,     256)]  private float            drawRad   = 32;
-    [SerializeField, Range(-.99f, .99f)] private float            brushCurve;
-    [SerializeField]                     private List<ImageLayer> imageLayers = new();
-    [SerializeField]                     private int              selectedLayerIndex;
+    [SerializeField] private List<ImageLayer> imageLayers = new();
+    [SerializeField] private int              selectedLayerIndex;
+
+    [SerializeField] private Brush brush;
+
+    [ColorUsage(false)] public Color32 fgColor = new(255, 255, 255, 255);
+    [ColorUsage(false)] public   Color32 bgColor = new(0, 0, 0, 255);
+    [Range(0, 1)] public                            float   alpha   = 1;
 
     private float     lastBrushCurve;
     private Color32   lastBrushColor;
@@ -63,10 +61,7 @@ public class ViewportTestingEditor : EditorWindow
         _so = new SerializedObject(this);
         root.Bind(_so);
 
-        drawColor = new Color32(0, 0, 0, 255);
-
-        var cursorSize = Mathf.CeilToInt(drawRad * 2);
-        cursurImage = new Texture2D(1, 1);
+        cursurImage = new(1, 1);
 
         _imageStackElement = root.Q<VisualElement>("imageStack");
         InitLayers();
@@ -158,34 +153,32 @@ public class ViewportTestingEditor : EditorWindow
         if (root.Q<IMGUIContainer>("handlesOverlay") is { } handlesOverlay)
         {
             _canvas?.Add(handlesOverlay);
-            _brushPreviewElement = new VisualElement() { style = { backgroundImage = cursurImage, position = Position.Absolute } };
+            _brushPreviewElement = new()
+            {
+                style =
+                {
+                    backgroundImage = cursurImage,
+                    position        = Position.Absolute,
+                    translate       = new Translate(Length.Percent(-50), Length.Percent(-50), 0)
+                }
+            };
+
             handlesOverlay.Add(_brushPreviewElement);
             handlesOverlay.onGUIHandler = () =>
             {
-                UpdateBrushTexture(); 
+                var center = handlesOverlay.WorldToLocal(Event.current.mousePosition + handlesOverlay.worldBound.position);
 
-                var center  = handlesOverlay.WorldToLocal(Event.current.mousePosition + handlesOverlay.worldBound.position);
-                var zoomRad = drawRad * zoom;
-                _brushPreviewElement.style.left   = center.x - drawRad * zoom;
-                _brushPreviewElement.style.top    = center.y - drawRad * zoom;
-                _brushPreviewElement.style.width  = drawRad * 2 * zoom;
-                _brushPreviewElement.style.height = drawRad * 2 * zoom;
-                Handles.color                     = new Color(1f, 1f, 1f, 0.5f);
-                Handles.matrix                    = Matrix4x4.TRS(center, Quaternion.identity, Vector3.one * zoom);
+                Handles.matrix = Matrix4x4.TRS(
+                    center,
+                    Quaternion.identity,
+                    Vector3.one * zoom);
+                brush.DrawHandle();
 
-                Handles.DrawWireDisc(Vector3.zero, Vector3.forward, drawRad);
-
-                // float steps = 30;
-                // for (int i = 1; i <= 30; i++)
-                // {
-                //     var x1 = (i - 1) / steps * zoomRad;
-                //     var x2 = i / steps * zoomRad;
-                //     var y1 = -Sigmoid(1 - (i - 1) / steps, brushCurve) * zoomRad;
-                //     var y2 = -Sigmoid(1 - i / steps,       brushCurve) * zoomRad;
-                //     // Handles.DrawLine(center + new Vector2(x1,  y1), center + new Vector2(x2,  y2));
-                //     // Handles.DrawLine(center + new Vector2(-x1, y1), center + new Vector2(-x2, y2));
-                //     
-                // }
+                var brushDia = brush.radius * 2 * zoom;
+                _brushPreviewElement.style.width  = brushDia;
+                _brushPreviewElement.style.height = brushDia;
+                _brushPreviewElement.style.left   = center.x;
+                _brushPreviewElement.style.top    = center.y;
             };
         }
 
@@ -206,8 +199,8 @@ public class ViewportTestingEditor : EditorWindow
         if (maskImages.Count > 0)
         {
             ret = new(512, 512);
-            
-            maskImages[0].image.CopyTexture(ret); 
+
+            maskImages[0].image.CopyTexture(ret);
         }
 
         for (var i = 1; i < maskImages.Count; i++)
@@ -236,14 +229,14 @@ public class ViewportTestingEditor : EditorWindow
             ret = new Texture2D(baseImage.image.width, baseImage.image.height);
             baseImage.image.CopyTexture(ret);
         }
-        
+
         var paintImages = imageLayers.FindAll(layer => layer.type == LayerType.Paint && layer.active);
         if (paintImages.Count > 0)
         {
             ret = new(512, 512);
             paintImages[0].image.CopyTexture(ret);
         }
-        
+
         for (var i = 1; i < paintImages.Count; i++)
         {
             new MixTextureJob()
@@ -253,6 +246,7 @@ public class ViewportTestingEditor : EditorWindow
                 overlayOpacity = paintImages[i].opacity
             }.Run(ret.width * ret.height);
         }
+
         if (ret != null) ret.Apply();
 
         return ret;
@@ -370,7 +364,7 @@ public class ViewportTestingEditor : EditorWindow
     {
         var texture = new Texture2D(512, 512);
         FillTexture(texture, new(0, 0, 0, 255));
-        AddLayer(new(layerName, texture) { type = LayerType.Mask }); 
+        AddLayer(new(layerName, texture) { type = LayerType.Mask });
     }
 
     public void AddBlankPaintover(string layerName)
@@ -396,8 +390,8 @@ public class ViewportTestingEditor : EditorWindow
         {
             if (evt.modifiers == EventModifiers.Alt)
             {
-                brushCurve = math.clamp(brushCurve + evt.mouseDelta.x / 100, -.99f, .99f);
-                drawRad    = math.clamp(drawRad - evt.mouseDelta.y / 2,      1,     256);
+                brush.falloff = math.clamp(brush.falloff + evt.mouseDelta.x / 100, -.99f, .99f);
+                brush.radius  = math.clamp(brush.radius - evt.mouseDelta.y / 2,    1,     256);
             }
             else
             {
@@ -414,19 +408,19 @@ public class ViewportTestingEditor : EditorWindow
             // fadecolor.a = 0;
             var layer   = imageLayers[selectedLayerIndex];
             var texture = layer.image;
-            var alpha   = (byte)(drawAlpha * 255);
+            var a       = (byte)(alpha * 255);
 
-            var clearColor = layer.type == LayerType.Mask ? new Color32(0,     0,     0,     255) : new(0, 0, 0, 0);
-            var brushColor = layer.type == LayerType.Mask ? new Color32(alpha, alpha, alpha, 255) : new(drawColor.r, drawColor.g, drawColor.b, alpha);
+            var clearColor = layer.type == LayerType.Mask ? new Color32(0, 0, 0, 255) : new(0, 0, 0, 0);
+            var brushColor = layer.type == LayerType.Mask ? new Color32(a, a, a, 255) : new(fgColor.r, fgColor.g, fgColor.b, a);
 
             var data = texture.GetRawTextureData<Color32>();
             new DrawJob()
             {
                 center      = new int2((int)mousePos.x, 512 - (int)mousePos.y),
                 pixels      = data,
-                rad         = drawRad * Event.current.pressure,
+                rad         = brush.radius * Event.current.pressure,
                 targetColor = evt.modifiers == EventModifiers.Alt ? clearColor : brushColor,
-                sig         = brushCurve
+                sig         = brush.falloff
             }.Run();
             texture.Apply();
             data.Dispose();
@@ -438,32 +432,6 @@ public class ViewportTestingEditor : EditorWindow
 
     private void UpdateBrushTexture()
     {
-        int size = Mathf.CeilToInt(drawRad * 2);
-
-        var colorChange = lastBrushColor.r != drawColor.r
-                       || lastBrushColor.g != drawColor.g
-                       || lastBrushColor.b != drawColor.b;
-
-        if (brushCurve != lastBrushCurve || colorChange || cursurImage.width != size)
-        {
-            if (cursurImage.width != size)
-            {
-                cursurImage.Reinitialize(size, size);
-            }
-
-            new UpdateBrushTextureJob()
-            {
-                pixels = cursurImage.GetRawTextureData<Color32>(),
-                rad    = drawRad,
-                sig    = brushCurve,
-                size   = size,
-                color  = drawColor
-            }.Run();
-            cursurImage.Apply();
-        }
-
-        lastBrushColor = drawColor;
-        lastBrushCurve = brushCurve;
     }
 
     private void SetZoomLevel(float newVal)

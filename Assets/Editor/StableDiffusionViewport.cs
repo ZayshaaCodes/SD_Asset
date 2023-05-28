@@ -101,7 +101,7 @@ namespace Editor
 
         private void ClearImage()
         {
-            sdImage = new SdImage(null, "");
+            sdImage = new SdImage();
             _editor.requestData.init_images.Clear();
             imageLayer.style.backgroundImage = new();
         }
