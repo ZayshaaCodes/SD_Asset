@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 24c6e24e0b794d8d8afc086c2445feb4, type: 3}
+  m_Name: GptAgent
+  m_EditorClassIdentifier: Assembly-CSharp-Editor:GPT.API.Editor:GptAgent
+  agentName: Smith
+  systemMessage: You are a helpful assistant in the unity game engine.
+  functions:
+  - name: ListFiles
+    description: Lists all files in a directory
+    parameters:
+      type: object
+      properties:
+        keys:
+        - path
+        values:
+        - type: string
+          description: The path to the directory to list files from
+          enum: []
+      required:
+      - path

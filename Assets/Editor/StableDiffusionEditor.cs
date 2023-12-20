@@ -1,242 +1,242 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using Unity.EditorCoroutines.Editor;
-using UnityEditor;
-using UnityEditor.UIElements;
-using UnityEngine;
-using UnityEngine.UIElements;
+﻿// using System;
+// using System.Collections;
+// using System.Collections.Generic;
+// using Unity.EditorCoroutines.Editor;
+// using UnityEditor;
+// using UnityEditor.UIElements;
+// using UnityEngine;
+// using UnityEngine.UIElements;
 
-namespace Editor
-{
-    public class StableDiffusionEditor : EditorWindow
-    {
-        private VisualElement outContainer;
-        private List<SdImage> outputImages = new();
-        private Texture2D     mask;
+// namespace Editor
+// {
+//     public class StableDiffusionEditor : EditorWindow
+//     {
+//         private VisualElement outContainer;
+//         private List<SdImage> outputImages = new();
+//         private Texture2D     mask;
 
-        private oldSdApi.ApiConfig _config;
+//         private oldSdApi.ApiConfig _config;
 
-        private StableDiffusionViewport viewport = null;
+//         private StableDiffusionViewport viewport = null;
 
-        private bool isRunning;
+//         private bool isRunning;
 
-        [SerializeField]                private string message;
-        [SerializeField, Range(0f, 1f)] private float  progress;
-        [SerializeField]                private string selectedSampler = "Euler a";
-        [SerializeField]                private string genButtonText   = "Generate";
+//         [SerializeField]                private string message;
+//         [SerializeField, Range(0f, 1f)] private float  progress;
+//         [SerializeField]                private string selectedSampler = "Euler a";
+//         [SerializeField]                private string genButtonText   = "Generate";
 
-        [SerializeField] public oldRequestData requestData;
+//         [SerializeField] public oldRequestData requestData;
 
-        [SerializeField] private List<string> models   = new();
-        [SerializeField] private List<string> samplers = new();
+//         [SerializeField] private List<string> models   = new();
+//         [SerializeField] private List<string> samplers = new();
 
-        [SerializeField] private VisualTreeAsset sdEditorUiAsset;
-        [SerializeField] private VisualTreeAsset previewImageUiAsset;
-        [SerializeField] private StyleSheet      style;
-        private                  ProgressBar     _progressBar;
+//         [SerializeField] private VisualTreeAsset sdEditorUiAsset;
+//         [SerializeField] private VisualTreeAsset previewImageUiAsset;
+//         [SerializeField] private StyleSheet      style;
+//         private                  ProgressBar     _progressBar;
 
-        [MenuItem("SD/Window")]
-        public static void LoadWindow()
-        {
-            GetWindow<StableDiffusionEditor>();
-        }
+//         [MenuItem("SD/Window")]
+//         public static void LoadWindow()
+//         {
+//             GetWindow<StableDiffusionEditor>();
+//         }
 
-        private void CreateGUI()
-        {
-            if (HasOpenInstances<StableDiffusionViewport>())
-            {
-                viewport = GetWindow<StableDiffusionViewport>();
-            }
+//         private void CreateGUI()
+//         {
+//             if (HasOpenInstances<StableDiffusionViewport>())
+//             {
+//                 viewport = GetWindow<StableDiffusionViewport>();
+//             }
 
-            sdEditorUiAsset.CloneTree(rootVisualElement);
-            rootVisualElement.Bind(new(this));
-            rootVisualElement.styleSheets.Add(style);
+//             sdEditorUiAsset.CloneTree(rootVisualElement);
+//             rootVisualElement.Bind(new(this));
+//             rootVisualElement.styleSheets.Add(style);
 
-            EditorCoroutineUtility.StartCoroutineOwnerless(InitializeGUI());
-        }
+//             EditorCoroutineUtility.StartCoroutineOwnerless(InitializeGUI());
+//         }
 
-        private IEnumerator InitializeGUI()
-        {
-            var root = rootVisualElement;
-            outContainer = root.Q<VisualElement>("out_container");
+//         private IEnumerator InitializeGUI()
+//         {
+//             var root = rootVisualElement;
+//             outContainer = root.Q<VisualElement>("out_container");
 
-            oldSdApi.GetModels(models);
-            oldSdApi.GetSamplers(samplers);
-            yield return oldSdApi.GetConfig(config =>
-            {
-                _config = config;
-            });
+//             oldSdApi.GetModels(models);
+//             oldSdApi.GetSamplers(samplers);
+//             yield return oldSdApi.GetConfig(config =>
+//             {
+//                 _config = config;
+//             });
 
-            if (root.Q<DropdownField>("model_dropdown") is { } dropdownField)
-            {
-                dropdownField.choices = models;
-                dropdownField.value   = _config.sd_model_checkpoint;
+//             if (root.Q<DropdownField>("model_dropdown") is { } dropdownField)
+//             {
+//                 dropdownField.choices = models;
+//                 dropdownField.value   = _config.sd_model_checkpoint;
 
-                dropdownField.RegisterValueChangedCallback(evt =>
-                {
-                    oldSdApi.SetModel(evt.newValue);
-                });
-            }
+//                 dropdownField.RegisterValueChangedCallback(evt =>
+//                 {
+//                     oldSdApi.SetModel(evt.newValue);
+//                 });
+//             }
 
-            if (root.Q<DropdownField>("samplers_dropdown") is { } samplerField)
-            {
-                samplerField.choices = samplers;
-            }
-
-
-            if (root.Q<Button>("maskeditor_btn") is { } maskButton)
-            {
-                maskButton.clicked += () =>
-                {
-                    viewport = GetWindow<StableDiffusionViewport>();
-                };
-            }
-
-            _progressBar = root.Q<ProgressBar>("progress-bar");
-
-            if (root.Q<Button>("generate_btn") is { } genButton)
-            {
-                genButton.clicked += () =>
-                {
-                    if (isRunning)
-                        oldSdApi.Interrupt();
-                    else
-                        EditorCoroutineUtility.StartCoroutine(Generate(), this);
-                };
-            }
-        }
-
-        private void LayoutPreviews()
-        {
-            outContainer.Clear();
-
-            var           colCount   = Mathf.FloorToInt(outContainer.contentRect.width / 256);
-            VisualElement rowElement = null;
-            for (int i = 0; i < outputImages.Count; i++)
-            {
-                if (i % colCount == 0)
-                {
-                    rowElement = new() { style = { flexDirection = FlexDirection.Row } };
-                    outContainer.Add(rowElement);
-                }
-
-                var img = previewImageUiAsset.CloneTree()[0];
-
-                var sdImage = outputImages[i];
-                img.style.backgroundImage = sdImage.image;
-                img.style.width           = sdImage.image.width / 2;
-                img.style.height          = sdImage.image.height / 2;
-                img.userData              = sdImage;
-
-                img.EnableInClassList("img-icon--sel", false);
-                var i1 = i;
-                img.RegisterCallback<MouseDownEvent>(evt =>
-                {
-                    SelectItem(img);
-                    if (evt.clickCount == 2)
-                    {
-                        Debug.Log($"double clicked {i1}");
-                        GetWindow<ViewportTestingEditor>()?.SetBaseImage(sdImage.image);
-                    }
-
-                    if (viewport != null)
-                    {
-                        viewport.SetImage(sdImage);
-                    }
-                });
-
-                rowElement!.Add(img);
-            }
-        }
-
-        private void SelectItem(VisualElement template)
-        {
-            foreach (var row in outContainer.Children())
-            {
-                foreach (var col in row.Children())
-                {
-                    col.EnableInClassList("img-icon--sel", col == template);
-                }
-            }
-        }
+//             if (root.Q<DropdownField>("samplers_dropdown") is { } samplerField)
+//             {
+//                 samplerField.choices = samplers;
+//             }
 
 
-        public IEnumerator Generate()
-        {
-            var paintWindow = GetWindow<ViewportTestingEditor>();
-            if (paintWindow != null)
-            {
-                requestData.init_images.Clear();
-                if (paintWindow.BuildOutputImage() is { } outImage)
-                {
-                    requestData.init_images.Add(outImage);
-                }
+//             if (root.Q<Button>("maskeditor_btn") is { } maskButton)
+//             {
+//                 maskButton.clicked += () =>
+//                 {
+//                     viewport = GetWindow<StableDiffusionViewport>();
+//                 };
+//             }
 
-                requestData.mask = paintWindow.BuildOutputMask();
-            }
+//             _progressBar = root.Q<ProgressBar>("progress-bar");
 
-            isRunning     = true;
-            genButtonText = "Interrupt";
-            Repaint();
+//             if (root.Q<Button>("generate_btn") is { } genButton)
+//             {
+//                 genButton.clicked += () =>
+//                 {
+//                     if (isRunning)
+//                         oldSdApi.Interrupt();
+//                     else
+//                         EditorCoroutineUtility.StartCoroutine(Generate(), this);
+//                 };
+//             }
+//         }
 
-            Texture2D tempTexture             = null;
-            if (viewport != null) tempTexture = viewport.TempShowTextureStart(requestData.height / (float)requestData.width);
-            EditorCoroutineUtility.StartCoroutine(ProgressCheck(tempTexture), this);
+//         private void LayoutPreviews()
+//         {
+//             outContainer.Clear();
 
-            yield return oldSdApi.Generate(requestData, generatedImages =>
-            {
-                VisualElement subcontainer = new() { style = { flexDirection = FlexDirection.Row } };
+//             var           colCount   = Mathf.FloorToInt(outContainer.contentRect.width / 256);
+//             VisualElement rowElement = null;
+//             for (int i = 0; i < outputImages.Count; i++)
+//             {
+//                 if (i % colCount == 0)
+//                 {
+//                     rowElement = new() { style = { flexDirection = FlexDirection.Row } };
+//                     outContainer.Add(rowElement);
+//                 }
 
-                outContainer.Add(subcontainer);
-                outputImages.Clear();
-                if (viewport != null && viewport.sdImage.image != null)
-                {
-                    outputImages.Add(viewport.sdImage);
-                }
+//                 var img = previewImageUiAsset.CloneTree()[0];
 
-                foreach (var generatedImage in generatedImages)
-                {
-                    outputImages.Add(generatedImage);
-                }
+//                 var sdImage = outputImages[i];
+//                 img.style.backgroundImage = sdImage.image;
+//                 img.style.width           = sdImage.image.width / 2;
+//                 img.style.height          = sdImage.image.height / 2;
+//                 img.userData              = sdImage;
 
-                LayoutPreviews();
-            });
+//                 img.EnableInClassList("img-icon--sel", false);
+//                 var i1 = i;
+//                 img.RegisterCallback<MouseDownEvent>(evt =>
+//                 {
+//                     SelectItem(img);
+//                     if (evt.clickCount == 2)
+//                     {
+//                         Debug.Log($"double clicked {i1}");
+//                         GetWindow<ViewportTestingEditor>()?.SetBaseImage(sdImage.image);
+//                     }
 
-            isRunning     = false;
-            genButtonText = "Generate";
-            progress      = 1;
-        }
+//                     if (viewport != null)
+//                     {
+//                         viewport.SetImage(sdImage);
+//                     }
+//                 });
 
-        private IEnumerator ProgressCheck(Texture2D previewTexture = null)
-        {
-            string currentImage = "";
-            while (isRunning)
-            {
-                yield return new EditorWaitForSeconds(.5f);
+//                 rowElement!.Add(img);
+//             }
+//         }
+
+//         private void SelectItem(VisualElement template)
+//         {
+//             foreach (var row in outContainer.Children())
+//             {
+//                 foreach (var col in row.Children())
+//                 {
+//                     col.EnableInClassList("img-icon--sel", col == template);
+//                 }
+//             }
+//         }
 
 
-                // yield return oldSdApi.CheckProgress((progData) =>
-                // {
-                //     progress = progData.percent;
+//         public IEnumerator Generate()
+//         {
+//             var paintWindow = GetWindow<ViewportTestingEditor>();
+//             if (paintWindow != null)
+//             {
+//                 requestData.init_images.Clear();
+//                 if (paintWindow.BuildOutputImage() is { } outImage)
+//                 {
+//                     requestData.init_images.Add(outImage);
+//                 }
 
-                //     if (_progressBar != null)
-                //     {
-                //         _progressBar.title = progData.Info;
-                //     }
+//                 requestData.mask = paintWindow.BuildOutputMask();
+//             }
 
-                //     if (progData.image == currentImage) return;
-                //     currentImage = progData.image;
-                //     if (previewTexture != null)
-                //     {
-                //         previewTexture.LoadImage(Convert.FromBase64String(progData.image));
-                //     }
-                // });
-            }
+//             isRunning     = true;
+//             genButtonText = "Interrupt";
+//             Repaint();
 
-            yield return null;
+//             Texture2D tempTexture             = null;
+//             if (viewport != null) tempTexture = viewport.TempShowTextureStart(requestData.height / (float)requestData.width);
+//             EditorCoroutineUtility.StartCoroutine(ProgressCheck(tempTexture), this);
 
-            if (viewport != null) viewport.TempShowTextureEnd();
-        }
-    }
-}
+//             yield return oldSdApi.Generate(requestData, generatedImages =>
+//             {
+//                 VisualElement subcontainer = new() { style = { flexDirection = FlexDirection.Row } };
+
+//                 outContainer.Add(subcontainer);
+//                 outputImages.Clear();
+//                 if (viewport != null && viewport.sdImage.image != null)
+//                 {
+//                     outputImages.Add(viewport.sdImage);
+//                 }
+
+//                 foreach (var generatedImage in generatedImages)
+//                 {
+//                     outputImages.Add(generatedImage);
+//                 }
+
+//                 LayoutPreviews();
+//             });
+
+//             isRunning     = false;
+//             genButtonText = "Generate";
+//             progress      = 1;
+//         }
+
+//         private IEnumerator ProgressCheck(Texture2D previewTexture = null)
+//         {
+//             string currentImage = "";
+//             while (isRunning)
+//             {
+//                 yield return new EditorWaitForSeconds(.5f);
+
+
+//                 // yield return oldSdApi.CheckProgress((progData) =>
+//                 // {
+//                 //     progress = progData.percent;
+
+//                 //     if (_progressBar != null)
+//                 //     {
+//                 //         _progressBar.title = progData.Info;
+//                 //     }
+
+//                 //     if (progData.image == currentImage) return;
+//                 //     currentImage = progData.image;
+//                 //     if (previewTexture != null)
+//                 //     {
+//                 //         previewTexture.LoadImage(Convert.FromBase64String(progData.image));
+//                 //     }
+//                 // });
+//             }
+
+//             yield return null;
+
+//             if (viewport != null) viewport.TempShowTextureEnd();
+//         }
+//     }
+// }

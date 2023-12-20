@@ -1,0 +1,20 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <Style src="project://database/Assets/ComfyEditor/ComfyEditorWindow.uss?fileID=7433441132597879392&amp;guid=7819809c21b561e4f8d2e6f90d07aee6&amp;type=3#ComfyEditorWindow" />
+    <ui:VisualElement name="h_group" style="flex-direction: row; flex-grow: 1; height: 100%;">
+        <AspectRatioMaintainer name="image" aspect-ratio="1" style="flex-grow: 1;" />
+        <ui:VisualElement name="side_panel" style="background-color: rgba(0, 0, 0, 0); width: 35%;">
+            <ui:ScrollView name="inputs" style="flex-grow: 1;">
+                <ui:VisualElement name="inputs" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0);" />
+            </ui:ScrollView>
+            <ui:Toggle label="Live Mode" name="livemode_toggle" />
+            <ui:Toggle binding-path="_randomSeed" label="Random" />
+            <uie:ObjectField binding-path="workflow" type="ComfyApiWorkflow, Assembly-CSharp" />
+            <ui:Button text="Render" display-tooltip-when-elided="true" name="render_button" style="font-size: 23px;" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+    <ui:VisualElement name="status_bar" style="flex-grow: 1; background-color: rgb(34, 34, 34); flex-direction: row; border-top-width: 1px; border-left-color: rgba(0, 0, 0, 0.53); border-right-color: rgba(0, 0, 0, 0.53); border-top-color: rgba(0, 0, 0, 0.53); border-bottom-color: rgba(0, 0, 0, 0.53);">
+        <ui:Label tabindex="-1" text="Status: " display-tooltip-when-elided="true" name="status_label" />
+        <ui:ProgressBar value="22" binding-path="_progress" style="flex-grow: 1;" />
+        <ui:Button text="Connect" display-tooltip-when-elided="true" name="connect_button" />
+    </ui:VisualElement>
+</ui:UXML>

@@ -1,0 +1,110 @@
+{
+  "model": "gpt-4",
+  "messages": [
+    {
+      "role": "system",
+      "content": "you are a helper bot, you are helping the user to work with unity"
+    },
+    {
+      "role": "user",
+      "content": "list the files"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "function_call": {
+        "name": "ListFiles",
+        "arguments": "{\n  \"path\": \".\"\n}"
+      }
+    },
+    {
+      "name": "funcName",
+      "role": "function",
+      "content": "[\"F:/UnityProjects/SD_Asset/Assets\\\\.\\\\123.unity\",\"F:/UnityProjects/SD_Asset/Assets\\\\.\\\\123.unity.meta\",\"F:/UnityProjects/SD_Asset/Assets\\\\.\\\\1234.unity\",\"F:/UnityProjects/SD_Asset/Assets\\\\.\\\\1234.unity.meta\",\"F:/UnityProjects/SD_Asset/Assets\\\\.\\\\bee.fbx\",\"F:/UnityProjects/SD_Asset/Assets\\\\.\\\\bee.fbx.meta\",\"F:/UnityProjects/SD_Asset/Assets\\\\.\\\\char.asset\",\"F:/UnityProjects/SD_Asset/Assets\\\\.\\\\char.asset.meta\",\"F:/UnityProjects/SD_Asset/Assets\\\\.\\\\checker.png\",\"F:/UnityProjects/SD_Asset/Assets\\\\.\\\\checker.png.meta\",\"F:/UnityProjects/SD_Asset/Assets\\\\.\\\\CnApi.cs\",\"F:/UnityProjects/SD_Asset/Assets\\\\.\\\\CnApi.cs.meta\",\"F:/UnityProjects/SD_Asset/Assets\\\\.\\\\control net.meta\",\"F:/UnityProjects/SD_Asset/Assets\\\\.\\\\defPaint.png\",\"F:/UnityProjects/SD_Asset/Assets\\\\.\\\\defPaint.png.meta\",\"F:/UnityProjects/SD_Asset/Assets\\\\.\\\\Editor.meta\",\"F:/UnityProjects/SD_Asset/Assets\\\\.\\\\GPT.meta\",\"F:/UnityProjects/SD_Asset/Assets\\\\.\\\\Grad.cs\",\"F:/UnityProjects/SD_Asset/Assets\\\\.\\\\Grad.cs.meta\",\"F:/UnityProjects/SD_Asset/Assets\\\\.\\\\image.png\",\"F:/UnityProjects/SD_Asset/Assets\\\\.\\\\image.png.meta\",\"F:/UnityProjects/SD_Asset/Assets\\\\.\\\\LinkRenderTextureToConfig.cs\",\"F:/UnityProjects/SD_Asset/Assets\\\\.\\\\LinkRenderTextureToConfig.cs.meta\",\"F:/UnityProjects/SD_Asset/Assets\\\\.\\\\mask.png\",\"F:/UnityProjects/SD_Asset/Assets\\\\.\\\\mask.png.meta\",\"F:/UnityProjects/SD_Asset/Assets\\\\.\\\\MatchFov.cs\",\"F:/UnityProjects/SD_Asset/Assets\\\\.\\\\MatchFov.cs.meta\",\"F:/UnityProjects/SD_Asset/Assets\\\\.\\\\Materials.meta\",\"F:/UnityProjects/SD_Asset/Assets\\\\.\\\\NewApi.meta\",\"F:/UnityProjects/SD_Asset/Assets\\\\.\\\\OldSd.meta\",\"F:/UnityProjects/SD_Asset/Assets\\\\.\\\\plugins.meta\",\"F:/UnityProjects/SD_Asset/Assets\\\\.\\\\PrideUwu-albedo.png\",\"F:/UnityProjects/SD_Asset/Assets\\\\.\\\\PrideUwu-albedo.png.meta\",\"F:/UnityProjects/SD_Asset/Assets\\\\.\\\\RangeStepIntAttribute.cs\",\"F:/UnityProjects/SD_Asset/Assets\\\\.\\\\RangeStepIntAttribute.cs.meta\",\"F:/UnityProjects/SD_Asset/Assets\\\\.\\\\RenderTarget_RawImage.cs\",\"F:/UnityProjects/SD_Asset/Assets\\\\.\\\\RenderTarget_RawImage.cs.meta\",\"F:/UnityProjects/SD_Asset/Assets\\\\.\\\\req.json\",\"F:/UnityProjects/SD_Asset/Assets\\\\.\\\\req.json.meta\",\"F:/UnityProjects/SD_Asset/Assets\\\\.\\\\result.json\",\"F:/UnityProjects/SD_Asset/Assets\\\\.\\\\result.json.meta\",\"F:/UnityProjects/SD_Asset/Assets\\\\.\\\\Samples.meta\",\"F:/UnityProjects/SD_Asset/Assets\\\\.\\\\Scenes.meta\",\"F:/UnityProjects/SD_Asset/Assets\\\\.\\\\SdControlnetCamera.cs\",\"F:/UnityProjects/SD_Asset/Assets\\\\.\\\\SdControlnetCamera.cs.meta\",\"F:/UnityProjects/SD_Asset/Assets\\\\.\\\\SdImage.cs\",\"F:/UnityProjects/SD_Asset/Assets\\\\.\\\\SdImage.cs.meta\",\"F:/UnityProjects/SD_Asset/Assets\\\\.\\\\SelectionBase.cs\",\"F:/UnityProjects/SD_Asset/Assets\\\\.\\\\SelectionBase.cs.meta\",\"F:/UnityProjects/SD_Asset/Assets\\\\.\\\\Settings.meta\",\"F:/UnityProjects/SD_Asset/Assets\\\\.\\\\StableDiffusion.meta\",\"F:/UnityProjects/SD_Asset/Assets\\\\.\\\\UI Toolkit.meta\",\"F:/UnityProjects/SD_Asset/Assets\\\\.\\\\UniversalRenderPipelineGlobalSettings.asset\",\"F:/UnityProjects/SD_Asset/Assets\\\\.\\\\UniversalRenderPipelineGlobalSettings.asset.meta\",\"F:/UnityProjects/SD_Asset/Assets\\\\.\\\\WebSocketServer.cs\",\"F:/UnityProjects/SD_Asset/Assets\\\\.\\\\WebSocketServer.cs.meta\",\"F:/UnityProjects/SD_Asset/Assets\\\\.\\\\woman adventurer, high-detail, trending on artstation, octane render,lifelike--1.asset\",\"F:/UnityProjects/SD_Asset/Assets\\\\.\\\\woman adventurer, high-detail, trending on artstation, octane render,lifelike--1.asset.meta\"]"
+    },
+    {
+      "role": "assistant",
+      "content": "Here is the list of files in your project:\n\n1. 123.unity\n2. 123.unity.meta\n3. 1234.unity\n4. 1234.unity.meta\n5. bee.fbx\n6. bee.fbx.meta\n7. char.asset\n8. char.asset.meta\n9. checker.png\n10. checker.png.meta\n11. CnApi.cs\n12. CnApi.cs.meta\n13. control net.meta\n14. defPaint.png\n15. defPaint.png.meta\n16. Editor.meta\n17. GPT.meta\n18. Grad.cs\n19. Grad.cs.meta\n20. image.png\n21. image.png.meta\n22. LinkRenderTextureToConfig.cs\n23. LinkRenderTextureToConfig.cs.meta\n24. mask.png\n25. mask.png.meta\n26. MatchFov.cs\n27. MatchFov.cs.meta\n28. Materials.meta\n29. NewApi.meta\n30. OldSd.meta\n31. plugins.meta\n32. PrideUwu-albedo.png\n33. PrideUwu-albedo.png.meta\n34. RangeStepIntAttribute.cs\n35. RangeStepIntAttribute.cs.meta\n36. RenderTarget_RawImage.cs\n37. RenderTarget_RawImage.cs.meta\n38. req.json\n39. req.json.meta\n40. result.json\n41. result.json.meta\n42. Samples.meta\n43. Scenes.meta\n44. SdControlnetCamera.cs\n45. SdControlnetCamera.cs.meta\n46. SdImage.cs\n47. SdImage.cs.meta\n48. SelectionBase.cs\n49. SelectionBase.cs.meta\n50. Settings.meta\n51. StableDiffusion.meta\n52. UI Toolkit.meta\n53. UniversalRenderPipelineGlobalSettings.asset\n54. UniversalRenderPipelineGlobalSettings.asset.meta\n55. WebSocketServer.cs\n56. WebSocketServer.cs.meta\n57. woman adventurer, high-detail, trending on artstation, octane render, lifelike--1.asset\n58. woman adventurer, high-detail, trending on artstation, octane render, lifelike--1.asset.meta\n\nPlease let me know if you need help with something else."
+    },
+    {
+      "role": "user",
+      "content": "what's in the GPT folder?"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "function_call": {
+        "name": "ListFiles",
+        "arguments": "{\n  \"path\": \"GPT\"\n}"
+      }
+    },
+    {
+      "name": "funcName",
+      "role": "function",
+      "content": "[\"F:/UnityProjects/SD_Asset/Assets\\\\GPT\\\\AiApiTypes.cs\",\"F:/UnityProjects/SD_Asset/Assets\\\\GPT\\\\AiApiTypes.cs.meta\",\"F:/UnityProjects/SD_Asset/Assets\\\\GPT\\\\Editor.meta\",\"F:/UnityProjects/SD_Asset/Assets\\\\GPT\\\\GptAgent.cs\",\"F:/UnityProjects/SD_Asset/Assets\\\\GPT\\\\GptAgent.cs.meta\",\"F:/UnityProjects/SD_Asset/Assets\\\\GPT\\\\IAiFunction.cs\",\"F:/UnityProjects/SD_Asset/Assets\\\\GPT\\\\IAiFunction.cs.meta\",\"F:/UnityProjects/SD_Asset/Assets\\\\GPT\\\\last_request.json\",\"F:/UnityProjects/SD_Asset/Assets\\\\GPT\\\\last_request.json.meta\",\"F:/UnityProjects/SD_Asset/Assets\\\\GPT\\\\OpenAiEndpointProvider.cs\",\"F:/UnityProjects/SD_Asset/Assets\\\\GPT\\\\OpenAiEndpointProvider.cs.meta\"]"
+    },
+    {
+      "role": "assistant",
+      "content": "Here is a list of files in the 'GPT' folder:\n\n1. AiApiTypes.cs\n2. AiApiTypes.cs.meta\n3. Editor.meta\n4. GptAgent.cs\n5. GptAgent.cs.meta\n6. IAiFunction.cs\n7. IAiFunction.cs.meta\n8. last_request.json\n9. last_request.json.meta\n10. OpenAiEndpointProvider.cs\n11. OpenAiEndpointProvider.cs.meta\n\nPlease let me know if you need further assistance."
+    },
+    {
+      "role": "user",
+      "content": "any idea what that stuff is?"
+    }
+  ],
+  "functions": [
+    {
+      "name": "DebugLog",
+      "description": "Logs a message to the console",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "The message to log"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      }
+    },
+    {
+      "name": "CreateFile",
+      "description": "Creates a new file in the project",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "The path to the file to create"
+          },
+          "contents": {
+            "type": "string",
+            "description": "The contents of the file to create"
+          }
+        },
+        "required": [
+          "path",
+          "contents"
+        ]
+      }
+    },
+    {
+      "name": "ListFiles",
+      "description": "Lists all files in the project",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "The path directory to list files from"
+          }
+        },
+        "required": [
+          "path"
+        ]
+      }
+    }
+  ]
+}

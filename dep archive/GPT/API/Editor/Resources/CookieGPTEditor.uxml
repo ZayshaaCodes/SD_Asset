@@ -1,0 +1,7 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
+    <Style src="project://database/Assets/GPT/Editor/Resources/gptStyle.uss?fileID=7433441132597879392&amp;guid=3cf5a3d18341c0c4dbe0b6bdc206ca37&amp;type=3#gptStyle" />
+    <ui:ListView name="messages-listview" virtualization-method="DynamicHeight" style="flex-grow: 1;" />
+    <ui:TextField picking-mode="Ignore" multiline="true" binding-path="_input" style="height: 50px; flex-shrink: 1;">
+        <ui:Button text="Send" display-tooltip-when-elided="true" name="send-button" style="width: 75px;" />
+    </ui:TextField>
+</ui:UXML>

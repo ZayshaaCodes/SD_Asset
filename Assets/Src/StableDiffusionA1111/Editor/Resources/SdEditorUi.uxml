@@ -1,0 +1,15 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" version="1.0" editor-extension-mode="True">
+    <Style src="project://database/Assets/StableDiffusion/Editor/Resources/style.uss?fileID=7433441132597879392&amp;guid=21d2a2b4f22790949b9c02a9c87c1186&amp;type=3#style" />
+    <uie:Toolbar>
+        <uie:ToolbarButton text="Save" display-tooltip-when-elided="true" name="save-button" style="width: 100px; -unity-text-align: upper-center;" />
+        <uie:ToolbarButton text="Copy" display-tooltip-when-elided="true" name="copy-button" style="width: 100px; -unity-text-align: upper-center;" />
+    </uie:Toolbar>
+    <uie:PropertyField binding-path="renderTarget" name="soField" />
+    <ui:VisualElement name="navButtons" style="flex-direction: row;">
+        <ui:Button text="&lt;" display-tooltip-when-elided="true" name="back-button" style="flex-grow: 1; height: 25px;" />
+        <ui:Button text="&gt;" display-tooltip-when-elided="true" name="forward-button" style="flex-grow: 1;" />
+    </ui:VisualElement>
+    <ui:VisualElement name="canvas" style="flex-grow: 1; overflow: hidden;">
+        <ui:Image name="display" style="flex-shrink: 0;" />
+    </ui:VisualElement>
+</ui:UXML>

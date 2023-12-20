@@ -1,0 +1,33 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
+    <ui:Template name="ConfigControl" src="project://database/Assets/StableDiffusion/Editor/MasterControl/ConfigControl.uxml?fileID=9197481963319205126&amp;guid=bbcf64b55d842ef469b706316cb2f89a&amp;type=3#ConfigControl" />
+    <Style src="project://database/Assets/StableDiffusion/Editor/MasterControl/Resources/mcStyle.uss?fileID=7433441132597879392&amp;guid=3d88bf7c5fd0bb44cbef5b076f09065c&amp;type=3#mcStyle" />
+    <uie:Toolbar name="Toolbar">
+        <uie:ToolbarMenu tabindex="-1" display-tooltip-when-elided="true" text="File" name="FileMenu" style="width: 75px;" />
+        <uie:ToolbarMenu tabindex="-1" display-tooltip-when-elided="true" text="Edit" name="EditMenu" style="width: 75px;" />
+        <uie:ToolbarSpacer style="flex-grow: 1;" />
+        <ui:DropdownField label="model" binding-path="selectedModel" name="model_dropdown" style="width: 450px;" />
+    </uie:Toolbar>
+    <ui:VisualElement name="middle" style="flex-grow: 1; flex-direction: row;">
+        <ui:VisualElement name="left" style="flex-grow: 1;" />
+        <ui:VisualElement name="right" style="width: 400px; flex-direction: row; min-width: 300px; max-width: 600px;">
+            <ui:VisualElement name="splitter" style="width: 10px; border-left-color: rgb(34, 34, 34); border-right-color: rgb(34, 34, 34); border-top-color: rgb(34, 34, 34); border-bottom-color: rgb(34, 34, 34); background-color: rgb(60, 60, 60); border-left-width: 1px; border-right-width: 1px;" />
+            <ui:VisualElement style="flex-grow: 1;">
+                <uie:Toolbar name="tab_bar">
+                    <uie:ToolbarToggle focusable="false" label="General" name="general_tab" value="true" style="margin-left: 0;" />
+                    <uie:ToolbarToggle focusable="false" label="ControlNet" name="controlnet_tab" value="false" />
+                </uie:Toolbar>
+                <ui:VisualElement name="tab_container" style="flex-grow: 1;">
+                    <ui:ScrollView name="general_tab_view" style="flex-grow: 1; display: none;">
+                        <ui:Instance template="ConfigControl" name="ConfigControl" style="flex-grow: 1;" />
+                    </ui:ScrollView>
+                    <ui:ScrollView name="controlnet_tab_view" style="flex-grow: 1; display: flex;">
+                        <ui:IntegerField label="Integer Field" value="42" binding-path="_controlNetConfigs.Array.size" />
+                        <ui:ListView focusable="true" binding-path="_controlNetConfigs" virtualization-method="DynamicHeight" name="ListView" show-bound-collection-size="false" />
+                    </ui:ScrollView>
+                </ui:VisualElement>
+                <ui:Button display-tooltip-when-elided="true" binding-path="button_text" name="gen_button" style="height: 50px; font-size: 20px; -unity-font-style: bold; margin-left: 2px; margin-right: 2px; margin-top: 2px; margin-bottom: 2px;" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+    <ui:VisualElement name="Status" style="background-color: rgb(60, 60, 60); border-top-width: 1px; border-left-color: rgb(34, 34, 34); border-right-color: rgb(34, 34, 34); border-top-color: rgb(34, 34, 34); border-bottom-color: rgb(34, 34, 34); min-height: 23px;" />
+</ui:UXML>

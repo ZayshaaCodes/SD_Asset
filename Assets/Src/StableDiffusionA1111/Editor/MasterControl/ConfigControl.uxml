@@ -1,0 +1,37 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
+    <Style src="project://database/Assets/StableDiffusion/Editor/MasterControl/Resources/mcStyle.uss?fileID=7433441132597879392&amp;guid=3d88bf7c5fd0bb44cbef5b076f09065c&amp;type=3#mcStyle" />
+    <ui:Label text="Prompt" />
+    <ui:TextField binding-path="prompt" multiline="true" style="height: 50px;" />
+    <ui:Label text="Negative Prompt" />
+    <ui:TextField binding-path="negative_prompt" multiline="true" style="height: 50px;" />
+    <ui:Foldout text="Common" style="background-color: rgba(0, 255, 11, 0.05); overflow: hidden; flex-shrink: 0;">
+        <ui:DropdownField label="Aspect" name="aspect_dropdown" binding-path="aspect">
+            <ui:Toggle label="Flip" binding-path="flipAspect" />
+        </ui:DropdownField>
+        <ui:SliderInt picking-mode="Ignore" label="Height" value="42" high-value="2048" binding-path="height" show-input-field="true" name="height-slider" />
+        <ui:SliderInt picking-mode="Ignore" label="Width" value="42" high-value="2048" binding-path="width" show-input-field="true" name="width-slider" />
+        <ui:DropdownField label="Sampler" name="sampler_dropdown" binding-path="sampler_index" />
+        <ui:SliderInt picking-mode="Ignore" label="Count" value="42" high-value="100" binding-path="n_iter" show-input-field="true" />
+        <ui:SliderInt picking-mode="Ignore" label="Batches" value="42" high-value="100" binding-path="batch_size" show-input-field="true" />
+        <ui:SliderInt picking-mode="Ignore" label="Steps" value="42" high-value="100" binding-path="steps" show-input-field="true" />
+        <ui:IntegerField label="Seed" binding-path="seed">
+            <ui:Toggle label="Random" />
+        </ui:IntegerField>
+        <ui:Slider picking-mode="Ignore" label="Cfg Scale" value="0.75" high-value="1" binding-path="cfg_scale" show-input-field="true" tooltip="Classifier Free Guidance Scale" />
+        <ui:VisualElement style="flex-direction: row;">
+            <ui:Toggle label="Restore Faces" binding-path="restore_faces" />
+            <ui:Toggle label="Tiling" binding-path="tiling" />
+        </ui:VisualElement>
+    </ui:Foldout>
+    <ui:Foldout text="img2img" name="Foldout" style="background-color: rgba(0, 81, 255, 0.05); overflow: hidden; flex-shrink: 0;">
+        <ui:EnumField label="Resize" binding-path="resize_mode" />
+        <ui:Slider picking-mode="Ignore" label="Denoising" value="0.75" high-value="1" binding-path="denoising_strength" show-input-field="true" />
+        <ui:SliderInt picking-mode="Ignore" label="Mask Blur" high-value="64" value="4" binding-path="mask_blur" show-input-field="true" />
+        <uie:PropertyField binding-path="init_images" />
+        <ui:Foldout text="Inpainting">
+            <ui:EnumField label="Resize" binding-path="resize_mode" />
+            <ui:Slider picking-mode="Ignore" label="Denoising" value="0.75" high-value="1" binding-path="denoising_strength" show-input-field="true" />
+            <uie:ObjectField binding-path="mask" type="UnityEngine.Texture, UnityEngine.CoreModule" label="Mask" />
+        </ui:Foldout>
+    </ui:Foldout>
+</ui:UXML>

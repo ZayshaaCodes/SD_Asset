@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3384fb9f5f47dc942ba0d0653413366d, type: 3}
+  m_Name: Color
+  m_EditorClassIdentifier: 
+  module: color
+  model: t2iadapter_color_sd14v1 [8522029d]
+  weight: 0.888
+  resize_mode: 1
+  lowvram: 0
+  processor_res: 768
+  threshold_a: 0
+  threshold_b: 0
+  guidance_start: 0
+  guidance_end: 1
+  control_mode: 0
+  pixel_perfect: 1
+  input_image: {fileID: 8400000, guid: 2ae326132ff6f0a42aa73ce721e422c4, type: 2}
