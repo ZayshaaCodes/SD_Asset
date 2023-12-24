@@ -11,11 +11,19 @@ using UnityEngine.UIElements;
 
 public class MiniPaintEditorWindow : EditorWindow
 {
-    [SerializeField] private VisualTreeAsset vta;
-    [SerializeField] private VisualTreeAsset layerItemVta;
-    [SerializeField] private string message;
+    [SerializeField]                  private VisualTreeAsset vta;
+    [SerializeField]                  private VisualTreeAsset layerItemVta;
+    [SerializeField]                  private string          message;
+    [SerializeField, Range(.125f, 3)] private float           zoom     = 1;
+    [SerializeField]                  public  bool            autoSend = true;
 
-    [SerializeField] private PaintContext context = new();
+    //moving this to a DocumentContext class
+    // [SerializeField] private List<ImageLayer> context.layers = new();
+    // [SerializeField] private int              selectedLayerIndex;
+    // [ColorUsage(false)] public Color32 fgColor = new(255, 255, 255, 255);
+    // [ColorUsage(false)] public   Color32 bgColor = new(0, 0, 0, 255);
+
+    PaintContext context = new(); 
     // private Texture2D cursurImage;
 
     [SerializeField] private List<MiniPaintTool> tools = new();
@@ -24,19 +32,16 @@ public class MiniPaintEditorWindow : EditorWindow
     // [SerializeField] private Texture2D defaultBase;
     [SerializeField] private Texture2D defaultPaint;
     // [SerializeField] private Texture2D defaultMask;
-    [SerializeField] private int2 imageSize = new int2(512, 512);
+    [SerializeField] private int2      imageSize = new int2(512, 512);
 
     //VisualElements
     private VisualElement _canvas;
     private VisualElement _imageStackElement;
-    private ListView _layersElement;
+    private ListView      _layersElement;
     private VisualElement _brushPreviewElement;
 
     //state
-    private bool _dragging;
-    private Vector2 _lastMousePos;
-    [SerializeField, Range(.125f, 3)] private float _zoom = 1;
-
+    private bool             _dragging;
     // private bool             _drawing;
     private SerializedObject _so;
 
@@ -98,7 +103,7 @@ public class MiniPaintEditorWindow : EditorWindow
         {
             _layersElement.itemIndexChanged += (from, to) =>
             {
-                var c = _imageStackElement.childCount - 1;
+                var c    = _imageStackElement.childCount - 1;
                 var item = _imageStackElement[c - from];
                 _imageStackElement.RemoveAt(c - from);
                 _imageStackElement.Insert(c - to, item);
@@ -126,41 +131,135 @@ public class MiniPaintEditorWindow : EditorWindow
         {
             _canvas.RegisterCallback<MouseDownEvent>(evt =>
             {
-                activeTool?.OnMouseEvent(context, evt.localMousePosition, evt.button, EventType.MouseDown, evt.modifiers);
+                activeTool.OnMouseEvent(context, evt.localMousePosition, evt.button, EventType.MouseDown, evt.modifiers);
             });
             _canvas.RegisterCallback<MouseMoveEvent>(evt =>
             {
-                _lastMousePos = _imageStackElement.parent.WorldToLocal(evt.mousePosition);
-                activeTool?.OnMouseEvent(context, evt.localMousePosition, evt.button, EventType.MouseMove, evt.modifiers);
-                UpdateMessage();
+                activeTool.OnMouseEvent(context, evt.localMousePosition, evt.button, EventType.MouseMove, evt.modifiers);
             });
             _canvas.RegisterCallback<MouseUpEvent>(evt =>
             {
-                activeTool?.OnMouseEvent(context, evt.localMousePosition, evt.button, EventType.MouseUp, evt.modifiers);
+                activeTool.OnMouseEvent(context, evt.localMousePosition, evt.button, EventType.MouseUp, evt.modifiers);
             });
             _canvas.RegisterCallback<MouseLeaveEvent>(evt =>
             {
-                activeTool?.OnMouseEvent(context, evt.localMousePosition, evt.button, EventType.MouseLeaveWindow, evt.modifiers);
+                activeTool.OnMouseEvent(context, evt.localMousePosition, evt.button, EventType.MouseLeaveWindow, evt.modifiers);
             });
             // _canvas.RegisterCallback<MouseMoveEvent>(DrawEvent);
             // _canvas.RegisterCallback<MouseLeaveEvent>(OnEndDrag);
             // _canvas.RegisterCallback<MouseUpEvent>(OnEndDrag);
             _canvas.RegisterCallback<WheelEvent>(Zoom);
         }
+
+        // Draw Handles
+        // if (root.Q<IMGUIContainer>("handlesOverlay") is { } handlesOverlay)
+        // {
+        //     _canvas?.Add(handlesOverlay);
+        //     _brushPreviewElement = new()
+        //     {
+        //         style =
+        //         {
+        //             backgroundImage = cursurImage,
+        //             position        = Position.Absolute,
+        //             translate       = new Translate(Length.Percent(-50), Length.Percent(-50), 0)
+        //         }
+        //     };
+
+        //     handlesOverlay.Add(_brushPreviewElement);
+        //     handlesOverlay.onGUIHandler = () =>
+        //     {
+        //         var center = handlesOverlay.WorldToLocal(Event.current.mousePosition + handlesOverlay.worldBound.position);
+
+        //         Handles.matrix = Matrix4x4.TRS(
+        //             center,
+        //             Quaternion.identity,
+        //             Vector3.one * zoom);
+        //         // brush.DrawHandle();
+
+        //         // var brushDia = brush.radius * 2 * zoom;
+        //         // _brushPreviewElement.style.width  = brushDia;
+        //         // _brushPreviewElement.style.height = brushDia;
+        //         // _brushPreviewElement.style.left   = center.x;
+        //         // _brushPreviewElement.style.top    = center.y;
+        //     };
+        // }
+
+        // // Zoom Slider
+        // if (root.Q<PropertyField>("zoomSlider") is { } zoomSlider)
+        // {
+        //     zoomSlider.RegisterValueChangeCallback(evt =>
+        //     {
+        //         SetZoomLevel(evt.changedProperty.floatValue);
+        //     });
+        // }
     }
 
-    private void UpdateMessage()
-    {
-        var mousePos = _imageStackElement.parent.WorldToLocal(Event.current.mousePosition);
-        message = $"{_zoom * 100:F2}% | {mousePos}";
-    }
+    // public Texture2D BuildOutputMask()
+    // {
+    //     Texture2D ret        = null;
+    //     var       maskImages = context.layers.FindAll(layer => layer.type == LayerType.Mask && layer.active);
+    //     if (maskImages.Count > 0)
+    //     {
+    //         ret = new(512, 512);
+
+    //         maskImages[0].image.CopyTexture(ret);
+    //     }
+
+    //     for (var i = 1; i < maskImages.Count; i++)
+    //     {
+    //         new MixMaskJob()
+    //         {
+    //             baseTexture    = ret.GetRawTextureData<Color32>(),
+    //             overlayTexture = maskImages[i].image.GetRawTextureData<Color32>(),
+    //             overlayOpacity = maskImages[i].opacity
+    //         }.Run(ret.width * ret.height);
+    //     }
+
+    //     if (ret != null) ret.Apply();
+
+    //     return ret;
+    // }
+
+    // public Texture2D BuildOutputImage()
+    // {
+    //     ImageLayer baseImage = context.layers.Find(layer => layer.type == LayerType.Base && layer.active);
+
+    //     Texture2D ret = null;
+
+    //     if (baseImage?.image != null)
+    //     {
+    //         ret = new Texture2D(baseImage.image.width, baseImage.image.height);
+    //         baseImage.image.CopyTexture(ret);
+    //     }
+
+    //     var paintImages = context.layers.FindAll(layer => layer.type == LayerType.Paint && layer.active);
+    //     if (paintImages.Count > 0)
+    //     {
+    //         ret = new(512, 512);
+    //         paintImages[0].image.CopyTexture(ret);
+    //     }
+
+    //     for (var i = 1; i < paintImages.Count; i++)
+    //     {
+    //         new MixTextureJob()
+    //         {
+    //             baseTexture    = ret!.GetRawTextureData<Color32>(),
+    //             overlayTexture = paintImages[i].image.GetRawTextureData<Color32>(),
+    //             overlayOpacity = paintImages[i].opacity
+    //         }.Run(ret.width * ret.height);
+    //     }
+
+    //     if (ret != null) ret.Apply();
+
+    //     return ret;
+    // }
 
     private void OnLayersElementBindItem(VisualElement listElement, int i)
     {
         if (listElement.Q<VisualElement>("preview") is { } preview)
         {
             preview.style.backgroundImage = context.layers[i].image;
-            listElement.name = context.layers[i].name;
+            listElement.name              = context.layers[i].name;
         }
 
         listElement.AddManipulator(new ContextualMenuManipulator(evt =>
@@ -201,7 +300,7 @@ public class MiniPaintEditorWindow : EditorWindow
         if (listElement.Q<VisualElement>("preview") is { } preview)
         {
             preview.style.backgroundImage = null;
-            listElement.name = "";
+            listElement.name              = "";
         }
         // if (listElement.Q<Toggle>("enabledToggle") is { } eToggle)
         //     eToggle.RegisterValueChangedCallback(evt =>
@@ -347,9 +446,8 @@ public class MiniPaintEditorWindow : EditorWindow
 
     private void Zoom(WheelEvent evt)
     {
-        _zoom += evt.delta.y < 0 ? -.125f : .125f;
-        SetZoomLevel(_zoom);
-        UpdateMessage();
+        zoom += evt.delta.y < 0 ? -.125f : .125f;
+        SetZoomLevel(zoom);
     }
 
     private void FillTexture(Texture2D texture, Color32 color)

@@ -51,6 +51,7 @@
         "temp/": true,
         "Temp/": true
     },
+    "editor.codeLens": false,
     "dotnet.preferCSharpExtension": true,
     "dotnet.defaultSolution": "SD_Asset.sln"
 }

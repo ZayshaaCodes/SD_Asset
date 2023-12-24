@@ -1,13 +1,10 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
-    <Style src="project://database/Assets/Editor/Resources/EditorStyles.uss?fileID=7433441132597879392&amp;guid=ada999af30a3c1d4399eba4bfadd5e87&amp;type=3#EditorStyles" />
+    <Style src="project://database/Assets/Tools/MiniPaint/Editor/Resources/EditorStyles.uss?fileID=7433441132597879392&amp;guid=ada999af30a3c1d4399eba4bfadd5e87&amp;type=3#EditorStyles" />
     <ui:VisualElement style="flex-direction: row; flex-grow: 1;">
         <ui:VisualElement style="flex-grow: 1;">
             <ui:VisualElement name="params" style="display: flex; visibility: visible; overflow: visible; flex-direction: row;">
-                <uie:PropertyField binding-path="drawRad" name="drawRad" />
-                <uie:PropertyField binding-path="brushCurve" name="curve" label="123" />
-                <uie:PropertyField binding-path="drawAlpha" name="drawAlpha" />
-                <uie:PropertyField binding-path="fgColor" name="color" />
-                <uie:PropertyField binding-path="bgColor" name="color" />
+                <uie:PropertyField binding-path="context.fgColor" name="color" />
+                <uie:PropertyField binding-path="context.bgColor" name="color" />
             </ui:VisualElement>
             <ui:VisualElement name="canvas" focusable="true" style="flex-grow: 1; overflow: hidden; background-color: rgb(24, 24, 24); justify-content: center; align-items: center; min-height: 0;">
                 <ui:VisualElement name="bg" style="width: 512px; height: 512px; position: absolute; background-image: url(&apos;project://database/Assets/checker.png?fileID=2800000&amp;guid=0494f379bfa639446a482f4af00d35a0&amp;type=3#checker&apos;);">
@@ -16,15 +13,23 @@
                 <ui:IMGUIContainer name="handlesOverlay" style="flex-grow: 1; position: relative; width: 100%;" />
             </ui:VisualElement>
         </ui:VisualElement>
-        <ui:VisualElement name="layers" style="border-left-width: 1px; border-left-color: rgb(35, 35, 35);">
-            <uie:Toolbar>
+        <ui:VisualElement name="layers" style="border-left-width: 1px; border-left-color: rgb(35, 35, 35); display: flex; visibility: visible;">
+            <uie:Toolbar style="display: none; visibility: hidden;">
                 <uie:ToolbarButton text="+ mask" display-tooltip-when-elided="true" name="addMaskButton" />
                 <uie:ToolbarButton text="+ paint" display-tooltip-when-elided="true" name="addPaintButton" />
             </uie:Toolbar>
-            <ui:ListView focusable="true" binding-path="imageLayers" name="layersList" virtualization-method="DynamicHeight" show-bound-collection-size="false" selection-type="Single" reorderable="true" horizontal-scrolling="false" style="min-width: 100px; flex-direction: column-reverse; flex-grow: 1; justify-content: flex-end; align-items: stretch;" />
+            <ui:ListView focusable="true" binding-path="imageLayers" name="layersList" virtualization-method="DynamicHeight" show-bound-collection-size="false" selection-type="Single" reorderable="true" horizontal-scrolling="false" style="min-width: 100px; flex-direction: column-reverse; flex-grow: 1; justify-content: flex-end; align-items: stretch; display: flex;" />
             <ui:Button text="send" display-tooltip-when-elided="true" name="sendButton" style="font-size: 24px; -unity-font-style: bold;" />
             <ui:Toggle label="Send on generate" binding-path="autoSend" />
         </ui:VisualElement>
     </ui:VisualElement>
     <ui:Label display-tooltip-when-elided="true" binding-path="message" name="statusbar" style="background-color: rgb(34, 34, 34); border-top-width: 1px; border-top-color: rgb(35, 35, 35);" />
+    <ui:VisualElement name="Tools" style="background-color: rgba(48, 48, 48, 0.76); position: absolute; transform-origin: left; top: 4%;">
+        <ui:Button display-tooltip-when-elided="true" style="width: 32px; height: 32px; background-image: resource(&apos;Icons/Tool_Icons&apos;);" />
+        <ui:Button display-tooltip-when-elided="true" name="Button" style="width: 32px; height: 32px; background-image: resource(&apos;Icons/Tool_Icons_4&apos;);" />
+        <ui:Button display-tooltip-when-elided="true" style="width: 32px; height: 32px; background-image: resource(&apos;Icons/Tool_Icons_2&apos;);" />
+        <ui:Button display-tooltip-when-elided="true" style="width: 32px; height: 32px; background-image: resource(&apos;Icons/Tool_Icons_1&apos;);" />
+        <ui:Button display-tooltip-when-elided="true" style="width: 32px; height: 32px; background-image: resource(&apos;Icons/Tool_Icons_5&apos;);" />
+        <ui:Button display-tooltip-when-elided="true" style="width: 32px; height: 32px; background-image: resource(&apos;Icons/Tool_Icons_3&apos;);" />
+    </ui:VisualElement>
 </ui:UXML>
